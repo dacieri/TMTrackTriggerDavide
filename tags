@@ -1,0 +1,317 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+AllCells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  Listcells AllCells;$/;"	m	class:TMTrackFinderAlgorithm
+BeamErrorZ	tmtt_tf_analysis_cfg.py	/^        BeamErrorZ   = cms.double(15),                       #$/;"	v
+BetaRange	tmtt_tf_analysis_cfg.py	/^        BetaRange    = cms.double(0.2),                      # Lenght of the Beta segment$/;"	v
+Cells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  typedef std::vector<Stubs> Cells;$/;"	t	class:TMTrackFinderAlgorithm
+Debug	tmtt_tf_analysis_cfg.py	/^        Debug        = cms.bool(False),                      # Print some Debug information$/;"	v
+EtaRegions	tmtt_tf_analysis_cfg.py	/^        EtaRegions   = cms.vdouble(-3.2,-1.45,-0.61,0.61,1.45,3.2),   #Define the 5 trigger regions$/;"	v
+EtaRegister	tmtt_tf_analysis_cfg.py	/^        EtaRegister  = cms.bool(False)                       # Enable the new register cut in the transition region$/;"	v
+FWCore	TMTrackTrigger/TMTrackFinder/python/CfiFile_cfi.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+FWCore	TMTrackTrigger/TMTrackFinder/python/ConfFile_cfg.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+FWCore	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+FWCore	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+FWCore	tmtt_tf_analysis_cfg.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+FWCore	tmtt_tf_analysis_cfg.py	/^import FWCore.ParameterSet.VarParsing as VarParsing$/;"	i
+FWCore	tmtt_tf_analysis_cfg.py	/^import FWCore.Utilities.FileUtils as FileUtils$/;"	i
+FileUtils	tmtt_tf_analysis_cfg.py	/^import FWCore.Utilities.FileUtils as FileUtils$/;"	i
+GenParticles_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle<std::vector<reco::GenParticle> > GenParticles_;$/;"	m	class:TMTrackFinder
+HoughArray	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  typedef std::map<std::pair<int,int>, Stubs> HoughArray;$/;"	t	class:TMTrackFinderAlgorithm
+HoughBinsX	tmtt_tf_analysis_cfg.py	/^        HoughBinsX   = cms.int32(options.HBins),             # N. of Hough X bins$/;"	v
+HoughBinsY	tmtt_tf_analysis_cfg.py	/^        HoughBinsY   = cms.int32(options.HBins),             # N. of Hough Y bins$/;"	v
+HoughPrint	tmtt_tf_analysis_cfg.py	/^        HoughPrint   = cms.bool(False),  # Print the Hough Transform histograms (Need to change some lines in TMTrackFinderAlgorithm.cc and .h)$/;"	v
+LabelPlayback	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    LabelPlayback = cms.string(''),$/;"	v
+LabelPlayback	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    LabelPlayback = cms.string(''),$/;"	v
+Listcells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  typedef std::vector<Cells> Listcells;$/;"	t	class:TMTrackFinderAlgorithm
+MCTruthTTClusterHandle_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle< TTClusterAssociationMap<Ref_PixelDigi_> > MCTruthTTClusterHandle_;$/;"	m	class:TMTrackFinder
+MCTruthTTStubHandle_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle< TTStubAssociationMap<Ref_PixelDigi_> > MCTruthTTStubHandle_;$/;"	m	class:TMTrackFinder
+MCTruthTTStubHandle_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const edm::Handle< TTStubAssociationMap<Ref_PixelDigi_> > MCTruthTTStubHandle_;$/;"	m	class:TMTrackFinderAlgorithm
+MinHoughPt	tmtt_tf_analysis_cfg.py	/^        MinHoughPt   = cms.double(3.0),                      # Min stubs pT to use in the Hough Transform$/;"	v
+Newsegment	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  struct Newsegment {$/;"	s	class:TMTrackFinderAlgorithm
+ParameterSet	TMTrackTrigger/TMTrackFinder/python/CfiFile_cfi.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+ParameterSet	TMTrackTrigger/TMTrackFinder/python/ConfFile_cfg.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+ParameterSet	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+ParameterSet	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+ParameterSet	tmtt_tf_analysis_cfg.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+ParameterSet	tmtt_tf_analysis_cfg.py	/^import FWCore.ParameterSet.VarParsing as VarParsing$/;"	i
+PileUpInfo_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle<std::vector<PileupSummaryInfo> > PileUpInfo_;$/;"	m	class:TMTrackFinder
+PtHigh	tmtt_tf_analysis_cfg.py	/^        PtHigh       = cms.double(20),$/;"	v
+PtLow	tmtt_tf_analysis_cfg.py	/^        PtLow        = cms.double(3),                        # Limits for the pT histograms$/;"	v
+RECO	tmtt_tf_analysis_cfg.py	/^        RECO         = cms.bool(False),                      # True if you are analyzing a RECO sample$/;"	v
+RecoElectrons_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle<std::vector<reco::GsfElectron> > RecoElectrons_;$/;"	m	class:TMTrackFinder
+RecoMuons_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle<std::vector<reco::Muon> > RecoMuons_;$/;"	m	class:TMTrackFinder
+RefStub	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  typedef edm::Ref< edmNew::DetSetVector< TTStub<Ref_PixelDigi_> >, TTStub<Ref_PixelDigi_> > RefStub;$/;"	t	class:TMTrackFinderAlgorithm
+SampleType	tmtt_tf_analysis_cfg.py	/^        SampleType   = cms.int32(0),                         # 0 For Muons, 1 For Electrons. To be used only  with RECO datasets$/;"	v
+Segment	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  typedef std::pair<int,double> Segment;$/;"	t	class:TMTrackFinderAlgorithm
+SegmentCells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  typedef std::map<Segment, Cells> SegmentCells;$/;"	t	class:TMTrackFinderAlgorithm
+SegmentStubs	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  typedef std::map<Segment, Stubs> SegmentStubs;$/;"	t	class:TMTrackFinderAlgorithm
+StackedGeometryHandle	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::ESHandle<StackedTrackerGeometry> StackedGeometryHandle;$/;"	m	class:TMTrackFinder
+StubEtaRange	tmtt_tf_analysis_cfg.py	/^        StubEtaRange = cms.double(2.55),                     # Check that the beta segment is within the CMS Tracker acceptance$/;"	v
+StubMinPt	tmtt_tf_analysis_cfg.py	/^        StubMinPt    = cms.double(-2.0),                     # Select just stubs which have a truth pT > StubMinPt (-2 if you want to keep all stubs)$/;"	v
+StubSort	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  struct StubSort {$/;"	s	class:TMTrackFinderAlgorithm
+StubUnique	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  struct StubUnique {$/;"	s	class:TMTrackFinderAlgorithm
+Stubs	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  typedef std::vector<extended_stub> Stubs;$/;"	t	class:TMTrackFinderAlgorithm
+TMTrackFinder	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^class TMTrackFinder : public edm::EDAnalyzer {$/;"	c
+TMTrackFinder	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^DEFINE_FWK_MODULE(TMTrackFinder);$/;"	v
+TMTrackFinder	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^TMTrackFinder::TMTrackFinder(const edm::ParameterSet& iConfig)$/;"	f	class:TMTrackFinder
+TMTrackFinder	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^class TMTrackFinder : public edm::EDAnalyzer {$/;"	c	file:
+TMTrackFinder	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^DEFINE_FWK_MODULE(TMTrackFinder);$/;"	v
+TMTrackFinder	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^TMTrackFinder::TMTrackFinder(const edm::ParameterSet& iConfig)$/;"	f	class:TMTrackFinder
+TMTrackFinderAlgorithm	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^class TMTrackFinderAlgorithm  {$/;"	c
+TMTrackFinderAlgorithm	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^TMTrackFinderAlgorithm::TMTrackFinderAlgorithm(const edm::Handle< edmNew::DetSetVector< TTStub<Ref_PixelDigi_> > >& TTStubHandle,$/;"	f	class:TMTrackFinderAlgorithm
+TPptr	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  typedef edm::Ptr<TrackingParticle> TPptr;$/;"	t	class:TMTrackFinder
+TPs	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  typedef std::vector<TPptr> TPs;$/;"	t	class:TMTrackFinder
+TTClusterHandle_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle< edmNew::DetSetVector< TTCluster<Ref_PixelDigi_> > > TTClusterHandle_;$/;"	m	class:TMTrackFinder
+TTClusterInclusiveHandle_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle< edmNew::DetSetVector< TTCluster<Ref_PixelDigi_> > > TTClusterInclusiveHandle_;$/;"	m	class:TMTrackFinder
+TTStubHandle_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle< edmNew::DetSetVector< TTStub<Ref_PixelDigi_> > > TTStubHandle_;$/;"	m	class:TMTrackFinder
+TTStubHandle_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const edm::Handle< edmNew::DetSetVector< TTStub<Ref_PixelDigi_> > > TTStubHandle_;$/;"	m	class:TMTrackFinderAlgorithm
+TTStubRejectedHandle_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle< edmNew::DetSetVector< TTStub<Ref_PixelDigi_> > > TTStubRejectedHandle_;$/;"	m	class:TMTrackFinder
+TrackingParticleHandle_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Handle< std::vector<TrackingParticle> > TrackingParticleHandle_;$/;"	m	class:TMTrackFinder
+Utilities	tmtt_tf_analysis_cfg.py	/^import FWCore.Utilities.FileUtils as FileUtils$/;"	i
+VarParsing	tmtt_tf_analysis_cfg.py	/^import FWCore.ParameterSet.VarParsing as VarParsing$/;"	i
+Vsegment	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  typedef std::vector<Newsegment> Vsegment;$/;"	t	class:TMTrackFinderAlgorithm
+accepted_cells_perSeg_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  SegmentCells accepted_cells_perSeg_;$/;"	m	class:TMTrackFinderAlgorithm
+analyze	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^TMTrackFinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)$/;"	f	class:TMTrackFinder
+analyze	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^void TMTrackFinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){$/;"	f	class:TMTrackFinder
+averageNumber	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^            averageNumber = cms.double(200.0)$/;"	v
+averageNumber	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^            averageNumber = cms.double(60.)$/;"	v
+barcode	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    int barcode; \/\/ unique counter associated with stub?$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+beginJob	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^TMTrackFinder::beginJob()$/;"	f	class:TMTrackFinder
+beginJob	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^void TMTrackFinder::beginJob()$/;"	f	class:TMTrackFinder
+bend_filter	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^void TMTrackFinderAlgorithm::bend_filter(Cells& cells, Cells& filtered_cells)$/;"	f	class:TMTrackFinderAlgorithm
+beta_range_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  double beta_range_;$/;"	m	class:TMTrackFinder
+beta_range_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const double beta_range_;$/;"	m	class:TMTrackFinderAlgorithm
+betabin	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    int betabin;$/;"	m	struct:TMTrackFinderAlgorithm::Newsegment
+bunchspace	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    bunchspace = cms.int32(25), ##ns$/;"	v
+bunchspace	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    bunchspace = cms.int32(25), ##ns$/;"	v
+cell_readout	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^void TMTrackFinderAlgorithm::cell_readout(HoughArray& array, Cells& accepted_cells)$/;"	f	class:TMTrackFinderAlgorithm
+cms	TMTrackTrigger/TMTrackFinder/python/CfiFile_cfi.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+cms	TMTrackTrigger/TMTrackFinder/python/ConfFile_cfg.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+cms	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+cms	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+cms	tmtt_tf_analysis_cfg.py	/^import FWCore.ParameterSet.Config as cms$/;"	i
+collect_stubs	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^void TMTrackFinderAlgorithm::collect_stubs()$/;"	f	class:TMTrackFinderAlgorithm
+conf_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::ParameterSet conf_;$/;"	m	class:TMTrackFinder
+debug_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  bool debug_;$/;"	m	class:TMTrackFinder
+debug_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const bool debug_;$/;"	m	class:TMTrackFinderAlgorithm
+demo	TMTrackTrigger/TMTrackFinder/python/CfiFile_cfi.py	/^demo = cms.EDAnalyzer('TMTrackFinder'$/;"	v
+digitizers	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    digitizers = cms.PSet(theDigitizers),$/;"	v
+digitizers	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    digitizers = cms.PSet(theDigitizers),$/;"	v
+dphi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    double dphi;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+efficiency	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^void TMTrackFinder::efficiency(TPs& numTP)$/;"	f	class:TMTrackFinder
+endJob	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^TMTrackFinder::endJob() $/;"	f	class:TMTrackFinder
+endJob	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^void TMTrackFinder::endJob() $/;"	f	class:TMTrackFinder
+eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    double eta;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+eta_cut_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  double eta_cut_;$/;"	m	class:TMTrackFinder
+eta_cut_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const double eta_cut_;$/;"	m	class:TMTrackFinderAlgorithm
+eta_filter	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^void TMTrackFinderAlgorithm::eta_filter(Cells& cells, Cells& filtered_cells)$/;"	f	class:TMTrackFinderAlgorithm
+eta_regions_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  std::vector<double> eta_regions_;$/;"	m	class:TMTrackFinder
+eta_regions_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const std::vector<double> eta_regions_;$/;"	m	class:TMTrackFinderAlgorithm
+eta_register_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  bool eta_register_;$/;"	m	class:TMTrackFinder
+eta_register_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const bool eta_register_;$/;"	m	class:TMTrackFinderAlgorithm
+etabin	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    int etabin;$/;"	m	struct:TMTrackFinderAlgorithm::Newsegment
+extended_stub	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  struct extended_stub {$/;"	s	class:TMTrackFinderAlgorithm
+fileName	tmtt_tf_analysis_cfg.py	/^    fileName = cms.string(options.outputFile)$/;"	v
+fileNames	TMTrackTrigger/TMTrackFinder/python/ConfFile_cfg.py	/^    fileNames = cms.untracked.vstring($/;"	v
+fileNames	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^        fileNames = readFiles,$/;"	v
+fileNames	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^        fileNames = readFiles,$/;"	v
+fileNames	tmtt_tf_analysis_cfg.py	/^                            fileNames = readFiles,$/;"	v
+fillDescriptions	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^TMTrackFinder::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {$/;"	f	class:TMTrackFinder
+fillDescriptions	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^void TMTrackFinder::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {$/;"	f	class:TMTrackFinder
+filtered_cells_perSeg_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  SegmentCells filtered_cells_perSeg_;$/;"	m	class:TMTrackFinderAlgorithm
+find_tracking_particles	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^void TMTrackFinder::find_tracking_particles(TMTrackFinderAlgorithm::SegmentCells& segments, TPs& numTP)$/;"	f	class:TMTrackFinder
+fs	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  edm::Service<TFileService> fs;$/;"	m	class:TMTrackFinder
+generation	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^void TMTrackFinder::generation(const edm::Handle <std::vector<reco::GenParticle>> &Gens){$/;"	f	class:TMTrackFinder
+getAcceptedCells	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^const TMTrackFinderAlgorithm::SegmentCells &TMTrackFinderAlgorithm::getAcceptedCells() const$/;"	f	class:TMTrackFinderAlgorithm
+getFilteredCells	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^const TMTrackFinderAlgorithm::SegmentCells &TMTrackFinderAlgorithm::getFilteredCells() const$/;"	f	class:TMTrackFinderAlgorithm
+getListCells	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^const TMTrackFinderAlgorithm::Listcells &TMTrackFinderAlgorithm::getListCells() const$/;"	f	class:TMTrackFinderAlgorithm
+getSortedStubs	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^const TMTrackFinderAlgorithm::SegmentStubs &TMTrackFinderAlgorithm::getSortedStubs() const$/;"	f	class:TMTrackFinderAlgorithm
+getVsegment	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^const TMTrackFinderAlgorithm::Vsegment &TMTrackFinderAlgorithm::getVsegment() const$/;"	f	class:TMTrackFinderAlgorithm
+h_acc_cells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  std::vector<TH1D*> h_acc_cells;$/;"	m	class:TMTrackFinder
+h_acc_cells0	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_acc_cells0,*h_acc_cells1,*h_acc_cells2,*h_acc_cells3,*h_acc_cells4;$/;"	m	class:TMTrackFinder
+h_acc_cells1	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_acc_cells0,*h_acc_cells1,*h_acc_cells2,*h_acc_cells3,*h_acc_cells4;$/;"	m	class:TMTrackFinder
+h_acc_cells2	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_acc_cells0,*h_acc_cells1,*h_acc_cells2,*h_acc_cells3,*h_acc_cells4;$/;"	m	class:TMTrackFinder
+h_acc_cells3	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_acc_cells0,*h_acc_cells1,*h_acc_cells2,*h_acc_cells3,*h_acc_cells4;$/;"	m	class:TMTrackFinder
+h_acc_cells4	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_acc_cells0,*h_acc_cells1,*h_acc_cells2,*h_acc_cells3,*h_acc_cells4;$/;"	m	class:TMTrackFinder
+h_barcode	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_barcode, *h_ghost_pt;$/;"	m	class:TMTrackFinder
+h_candidate	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_candidate;$/;"	m	class:TMTrackFinder
+h_cells_EtaPhiPt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH3D *h_cells_EtaPhiPt, *h_gen_EtaPhiPt, *h_ghost_EtaPhiPt;$/;"	m	class:TMTrackFinder
+h_cells_duplicate	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_fake, *h_cells_duplicate;$/;"	m	class:TMTrackFinder
+h_cells_eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_eta, *h_tracks_eta,*h_ghost_eta,*h_ghost_phi;$/;"	m	class:TMTrackFinder
+h_cells_etaphi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_cells_etaphi, *h_tracks_etaphi,*h_tracks_reg_etaphi ;$/;"	m	class:TMTrackFinder
+h_cells_fake	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_fake, *h_cells_duplicate;$/;"	m	class:TMTrackFinder
+h_cells_id	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_phi, *h_tracks_phi, *h_cells_id;$/;"	m	class:TMTrackFinder
+h_cells_phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_phi, *h_tracks_phi, *h_cells_id;$/;"	m	class:TMTrackFinder
+h_cells_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_hough_pt, *h_cells_pt, *h_tracks_pt,*h_reco_pt,*h_gen_pt,*h_eff0_pt,*h_eff1_pt;$/;"	m	class:TMTrackFinder
+h_cells_total	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_total;$/;"	m	class:TMTrackFinder
+h_dupstubs	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_overlap, *h_dupstubs;$/;"	m	class:TMTrackFinder
+h_eff0	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_eff0,*h_eff1,*h_eff2, *h_reco_etaphi;$/;"	m	class:TMTrackFinder
+h_eff0_eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_eff0_eta, *h_eff0_phi;$/;"	m	class:TMTrackFinder
+h_eff0_phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_eff0_eta, *h_eff0_phi;$/;"	m	class:TMTrackFinder
+h_eff0_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_hough_pt, *h_cells_pt, *h_tracks_pt,*h_reco_pt,*h_gen_pt,*h_eff0_pt,*h_eff1_pt;$/;"	m	class:TMTrackFinder
+h_eff1	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_eff0,*h_eff1,*h_eff2, *h_reco_etaphi;$/;"	m	class:TMTrackFinder
+h_eff1_eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_eff1_eta, *h_eff1_phi;$/;"	m	class:TMTrackFinder
+h_eff1_phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_eff1_eta, *h_eff1_phi;$/;"	m	class:TMTrackFinder
+h_eff1_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_hough_pt, *h_cells_pt, *h_tracks_pt,*h_reco_pt,*h_gen_pt,*h_eff0_pt,*h_eff1_pt;$/;"	m	class:TMTrackFinder
+h_eff2	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_eff0,*h_eff1,*h_eff2, *h_reco_etaphi;$/;"	m	class:TMTrackFinder
+h_eff2_eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_eff2_eta, *h_eff2_phi;$/;"	m	class:TMTrackFinder
+h_eff2_phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_eff2_eta, *h_eff2_phi;$/;"	m	class:TMTrackFinder
+h_fake_cells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  std::vector<TH1D*> h_fake_cells;$/;"	m	class:TMTrackFinder
+h_fake_cells0	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_fake_cells0,*h_fake_cells1,*h_fake_cells2,*h_fake_cells3,*h_fake_cells4;$/;"	m	class:TMTrackFinder
+h_fake_cells1	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_fake_cells0,*h_fake_cells1,*h_fake_cells2,*h_fake_cells3,*h_fake_cells4;$/;"	m	class:TMTrackFinder
+h_fake_cells2	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_fake_cells0,*h_fake_cells1,*h_fake_cells2,*h_fake_cells3,*h_fake_cells4;$/;"	m	class:TMTrackFinder
+h_fake_cells3	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_fake_cells0,*h_fake_cells1,*h_fake_cells2,*h_fake_cells3,*h_fake_cells4;$/;"	m	class:TMTrackFinder
+h_fake_cells4	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_fake_cells0,*h_fake_cells1,*h_fake_cells2,*h_fake_cells3,*h_fake_cells4;$/;"	m	class:TMTrackFinder
+h_fake_segment	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_fake_segment;$/;"	m	class:TMTrackFinder
+h_filt_cells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  std::vector<TH1D*> h_filt_cells;$/;"	m	class:TMTrackFinder
+h_filt_cells0	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_filt_cells0,*h_filt_cells1,*h_filt_cells2,*h_filt_cells3,*h_filt_cells4;$/;"	m	class:TMTrackFinder
+h_filt_cells1	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_filt_cells0,*h_filt_cells1,*h_filt_cells2,*h_filt_cells3,*h_filt_cells4;$/;"	m	class:TMTrackFinder
+h_filt_cells2	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_filt_cells0,*h_filt_cells1,*h_filt_cells2,*h_filt_cells3,*h_filt_cells4;$/;"	m	class:TMTrackFinder
+h_filt_cells3	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_filt_cells0,*h_filt_cells1,*h_filt_cells2,*h_filt_cells3,*h_filt_cells4;$/;"	m	class:TMTrackFinder
+h_filt_cells4	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_filt_cells0,*h_filt_cells1,*h_filt_cells2,*h_filt_cells3,*h_filt_cells4;$/;"	m	class:TMTrackFinder
+h_gen_EtaPhiPt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH3D *h_cells_EtaPhiPt, *h_gen_EtaPhiPt, *h_ghost_EtaPhiPt;$/;"	m	class:TMTrackFinder
+h_gen_eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_gen_eta, *h_gen_phi;$/;"	m	class:TMTrackFinder
+h_gen_etaphi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_gen_etaphi;$/;"	m	class:TMTrackFinder
+h_gen_phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_gen_eta, *h_gen_phi;$/;"	m	class:TMTrackFinder
+h_gen_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_hough_pt, *h_cells_pt, *h_tracks_pt,*h_reco_pt,*h_gen_pt,*h_eff0_pt,*h_eff1_pt;$/;"	m	class:TMTrackFinder
+h_ghost	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_ghost_stubs, *h_ghost_register, *h_ghost;$/;"	m	class:TMTrackFinder
+h_ghost_EtaPhiPt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH3D *h_cells_EtaPhiPt, *h_gen_EtaPhiPt, *h_ghost_EtaPhiPt;$/;"	m	class:TMTrackFinder
+h_ghost_eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_eta, *h_tracks_eta,*h_ghost_eta,*h_ghost_phi;$/;"	m	class:TMTrackFinder
+h_ghost_etaphi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_ghost_etaphi;$/;"	m	class:TMTrackFinder
+h_ghost_id	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_ghost_id, *h_tracks_id, *h_tracks_reg_id;$/;"	m	class:TMTrackFinder
+h_ghost_phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_eta, *h_tracks_eta,*h_ghost_eta,*h_ghost_phi;$/;"	m	class:TMTrackFinder
+h_ghost_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_barcode, *h_ghost_pt;$/;"	m	class:TMTrackFinder
+h_ghost_register	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_ghost_stubs, *h_ghost_register, *h_ghost;$/;"	m	class:TMTrackFinder
+h_ghost_regpt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_ghost_regpt;$/;"	m	class:TMTrackFinder
+h_ghost_stubs	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_ghost_stubs, *h_ghost_register, *h_ghost;$/;"	m	class:TMTrackFinder
+h_goodstubs	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_goodstubs;$/;"	m	class:TMTrackFinder
+h_hough_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_hough_pt, *h_cells_pt, *h_tracks_pt,*h_reco_pt,*h_gen_pt,*h_eff0_pt,*h_eff1_pt;$/;"	m	class:TMTrackFinder
+h_overlap	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_overlap, *h_dupstubs;$/;"	m	class:TMTrackFinder
+h_pileup	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_pileup;$/;"	m	class:TMTrackFinder
+h_reco_eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_reco_eta, *h_reco_phi;$/;"	m	class:TMTrackFinder
+h_reco_etaphi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_eff0,*h_eff1,*h_eff2, *h_reco_etaphi;$/;"	m	class:TMTrackFinder
+h_reco_phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_reco_eta, *h_reco_phi;$/;"	m	class:TMTrackFinder
+h_reco_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_hough_pt, *h_cells_pt, *h_tracks_pt,*h_reco_pt,*h_gen_pt,*h_eff0_pt,*h_eff1_pt;$/;"	m	class:TMTrackFinder
+h_stubs_acc_cells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  std::vector<TH1D*> h_stubs_acc_cells;$/;"	m	class:TMTrackFinder
+h_stubs_acc_cells0	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_acc_cells0,*h_stubs_acc_cells1,*h_stubs_acc_cells2,*h_stubs_acc_cells3,*h_stubs_acc_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_acc_cells1	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_acc_cells0,*h_stubs_acc_cells1,*h_stubs_acc_cells2,*h_stubs_acc_cells3,*h_stubs_acc_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_acc_cells2	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_acc_cells0,*h_stubs_acc_cells1,*h_stubs_acc_cells2,*h_stubs_acc_cells3,*h_stubs_acc_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_acc_cells3	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_acc_cells0,*h_stubs_acc_cells1,*h_stubs_acc_cells2,*h_stubs_acc_cells3,*h_stubs_acc_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_acc_cells4	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_acc_cells0,*h_stubs_acc_cells1,*h_stubs_acc_cells2,*h_stubs_acc_cells3,*h_stubs_acc_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_bad	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_good, *h_stubs_bad;$/;"	m	class:TMTrackFinder
+h_stubs_filt_cells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  std::vector<TH1D*> h_stubs_filt_cells;$/;"	m	class:TMTrackFinder
+h_stubs_filt_cells0	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_filt_cells0,*h_stubs_filt_cells1,*h_stubs_filt_cells2,*h_stubs_filt_cells3,*h_stubs_filt_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_filt_cells1	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_filt_cells0,*h_stubs_filt_cells1,*h_stubs_filt_cells2,*h_stubs_filt_cells3,*h_stubs_filt_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_filt_cells2	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_filt_cells0,*h_stubs_filt_cells1,*h_stubs_filt_cells2,*h_stubs_filt_cells3,*h_stubs_filt_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_filt_cells3	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_filt_cells0,*h_stubs_filt_cells1,*h_stubs_filt_cells2,*h_stubs_filt_cells3,*h_stubs_filt_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_filt_cells4	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_filt_cells0,*h_stubs_filt_cells1,*h_stubs_filt_cells2,*h_stubs_filt_cells3,*h_stubs_filt_cells4;$/;"	m	class:TMTrackFinder
+h_stubs_good	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_stubs_good, *h_stubs_bad;$/;"	m	class:TMTrackFinder
+h_tracks_eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_eta, *h_tracks_eta,*h_ghost_eta,*h_ghost_phi;$/;"	m	class:TMTrackFinder
+h_tracks_etaphi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_cells_etaphi, *h_tracks_etaphi,*h_tracks_reg_etaphi ;$/;"	m	class:TMTrackFinder
+h_tracks_id	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_ghost_id, *h_tracks_id, *h_tracks_reg_id;$/;"	m	class:TMTrackFinder
+h_tracks_phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_cells_phi, *h_tracks_phi, *h_cells_id;$/;"	m	class:TMTrackFinder
+h_tracks_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_hough_pt, *h_cells_pt, *h_tracks_pt,*h_reco_pt,*h_gen_pt,*h_eff0_pt,*h_eff1_pt;$/;"	m	class:TMTrackFinder
+h_tracks_reg_eta	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_tracks_reg_eta, *h_tracks_reg_phi, *h_tracks_reg_pt;$/;"	m	class:TMTrackFinder
+h_tracks_reg_etaphi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *h_cells_etaphi, *h_tracks_etaphi,*h_tracks_reg_etaphi ;$/;"	m	class:TMTrackFinder
+h_tracks_reg_id	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_ghost_id, *h_tracks_id, *h_tracks_reg_id;$/;"	m	class:TMTrackFinder
+h_tracks_reg_phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_tracks_reg_eta, *h_tracks_reg_phi, *h_tracks_reg_pt;$/;"	m	class:TMTrackFinder
+h_tracks_reg_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH1D *h_tracks_reg_eta, *h_tracks_reg_phi, *h_tracks_reg_pt;$/;"	m	class:TMTrackFinder
+hough_bins_x_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  int hough_bins_x_;$/;"	m	class:TMTrackFinder
+hough_bins_x_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const int hough_bins_x_;$/;"	m	class:TMTrackFinderAlgorithm
+hough_bins_y_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  int hough_bins_y_;$/;"	m	class:TMTrackFinder
+hough_bins_y_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const int hough_bins_y_;$/;"	m	class:TMTrackFinderAlgorithm
+hough_print_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  bool hough_print_;$/;"	m	class:TMTrackFinder
+hough_print_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const bool hough_print_;$/;"	m	class:TMTrackFinderAlgorithm
+hough_pt_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  double hough_pt_;$/;"	m	class:TMTrackFinder
+hough_pt_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const double hough_pt_;$/;"	m	class:TMTrackFinderAlgorithm
+id	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    int id; \/\/ tracker layer number.$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+input	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    input = cms.SecSource("PoolSource",$/;"	v
+input	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    input = cms.SecSource("PoolSource",$/;"	v
+isReal	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    int isReal;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+lessthanten	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  int stop, lessthanten;$/;"	m	class:TMTrackFinder
+list	tmtt_tf_analysis_cfg.py	/^list = FileUtils.loadListFromFile(options.someList)$/;"	v
+maxBunch	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    maxBunch = cms.int32(3),$/;"	v
+maxBunch	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    maxBunch = cms.int32(3),$/;"	v
+measured_pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    double measured_pt;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+minBunch	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    minBunch = cms.int32(-12), ## in terms of 25 nsec$/;"	v
+minBunch	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    minBunch = cms.int32(-12), ## in terms of 25 nsec$/;"	v
+mix	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^mix = cms.EDProducer("MixingModule",$/;"	v
+mix	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^mix = cms.EDProducer("MixingModule",$/;"	v
+mixObjects	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    mixObjects = cms.PSet(theMixObjects)$/;"	v
+mixObjects	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    mixObjects = cms.PSet(theMixObjects)$/;"	v
+mixProdStep1	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    mixProdStep1 = cms.bool(False),$/;"	v
+mixProdStep1	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    mixProdStep1 = cms.bool(False),$/;"	v
+mixProdStep2	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    mixProdStep2 = cms.bool(False),$/;"	v
+mixProdStep2	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    mixProdStep2 = cms.bool(False),$/;"	v
+nbPileupEvents	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^        nbPileupEvents = cms.PSet($/;"	v
+nbPileupEvents	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^        nbPileupEvents = cms.PSet($/;"	v
+operator ()	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    bool operator() ( const T t1, const T t2) const {$/;"	f	struct:TMTrackFinderAlgorithm::StubSort
+operator ()	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    bool operator() ( const T t1, const T t2) const {$/;"	f	struct:TMTrackFinderAlgorithm::StubUnique
+options	tmtt_tf_analysis_cfg.py	/^options = VarParsing.VarParsing ('analysis')$/;"	v
+os	TMTrackTrigger/TMTrackFinder/python/__init__.py	/^import os$/;"	i
+override	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^      virtual void analyze(const edm::Event&, const edm::EventSetup&) override;$/;"	m	class:TMTrackFinder	file:
+override	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^      virtual void beginJob() override;$/;"	m	class:TMTrackFinder	file:
+override	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^      virtual void endJob() override;$/;"	m	class:TMTrackFinder	file:
+phi	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    double phi;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+playback	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    playback = cms.untracked.bool(False),$/;"	v
+playback	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    playback = cms.untracked.bool(False),$/;"	v
+position	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    GlobalPoint position;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+process	TMTrackTrigger/TMTrackFinder/python/ConfFile_cfg.py	/^process = cms.Process("Demo")$/;"	v
+process	tmtt_tf_analysis_cfg.py	/^process = cms.Process("Demo")$/;"	v
+pt	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    double pt;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+pt_cut_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  double pt_cut_;$/;"	m	class:TMTrackFinder
+pt_cut_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const double pt_cut_;$/;"	m	class:TMTrackFinderAlgorithm
+pt_high_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  double pt_high_;$/;"	m	class:TMTrackFinder
+pt_high_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const double pt_high_;$/;"	m	class:TMTrackFinderAlgorithm
+pt_low_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  double pt_low_;$/;"	m	class:TMTrackFinder
+pt_low_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const double pt_low_;$/;"	m	class:TMTrackFinderAlgorithm
+r	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    double r;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+r_filter	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^void TMTrackFinderAlgorithm::r_filter(Cells& cells, Cells& filtered_cells)$/;"	f	class:TMTrackFinderAlgorithm
+readFiles	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^readFiles = cms.untracked.vstring()$/;"	v
+readFiles	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^readFiles = cms.untracked.vstring()$/;"	v
+readFiles	tmtt_tf_analysis_cfg.py	/^readFiles = cms.untracked.vstring(*list)$/;"	v
+reco_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  bool reco_;$/;"	m	class:TMTrackFinder
+reconstruction0	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^void TMTrackFinder::reconstruction0(const edm::Handle <std::vector<reco::Muon>>& Muons){$/;"	f	class:TMTrackFinder
+reconstruction1	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^void TMTrackFinder::reconstruction1(const edm::Handle <std::vector<reco::GsfElectron>>& Electrons){$/;"	f	class:TMTrackFinder
+ref	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    RefStub ref;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+rphi_transform	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^void TMTrackFinderAlgorithm::rphi_transform(Stubs& stubs, HoughArray& array, double beta_seg)$/;"	f	class:TMTrackFinderAlgorithm
+run	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^void TMTrackFinderAlgorithm::run()$/;"	f	class:TMTrackFinderAlgorithm
+sample_type_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  int sample_type_;$/;"	m	class:TMTrackFinder
+sample_type_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const int sample_type_;$/;"	m	class:TMTrackFinderAlgorithm
+secFiles	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^secFiles = cms.untracked.vstring()$/;"	v
+secFiles	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^secFiles = cms.untracked.vstring()$/;"	v
+secFiles	tmtt_tf_analysis_cfg.py	/^secFiles = cms.untracked.vstring()$/;"	v
+secondaryFileNames	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^        secondaryFileNames = secFiles$/;"	v
+secondaryFileNames	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^        secondaryFileNames = secFiles$/;"	v
+secondaryFileNames	tmtt_tf_analysis_cfg.py	/^                            secondaryFileNames = secFiles$/;"	v
+segmentcells	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    Cells segmentcells;$/;"	m	struct:TMTrackFinderAlgorithm::Newsegment
+segmentsize	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    int segmentsize;$/;"	m	struct:TMTrackFinderAlgorithm::Newsegment
+sequential	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^	    sequential = cms.untracked.bool(True),$/;"	v
+sequential	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^	    sequential = cms.untracked.bool(True),$/;"	v
+sortedStubs_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  SegmentStubs sortedStubs_;$/;"	m	class:TMTrackFinderAlgorithm
+stop	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  int stop, lessthanten;$/;"	m	class:TMTrackFinder
+stub	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    TTStub<Ref_PixelDigi_> stub;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+stub_zr_10	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *stub_zr_10,  *stub_zr_11, *stub_zr_12, *stub_zr_13, *stub_zr_14;$/;"	m	class:TMTrackFinder
+stub_zr_11	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *stub_zr_10,  *stub_zr_11, *stub_zr_12, *stub_zr_13, *stub_zr_14;$/;"	m	class:TMTrackFinder
+stub_zr_12	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *stub_zr_10,  *stub_zr_11, *stub_zr_12, *stub_zr_13, *stub_zr_14;$/;"	m	class:TMTrackFinder
+stub_zr_13	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *stub_zr_10,  *stub_zr_11, *stub_zr_12, *stub_zr_13, *stub_zr_14;$/;"	m	class:TMTrackFinder
+stub_zr_14	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  TH2D *stub_zr_10,  *stub_zr_11, *stub_zr_12, *stub_zr_13, *stub_zr_14;$/;"	m	class:TMTrackFinder
+theMixObjects	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^from SimGeneral.MixingModule.mixObjects_cfi import theMixObjects$/;"	i
+theMixObjects	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^from SimGeneral.MixingModule.mixObjects_cfi import theMixObjects$/;"	i
+theStackedGeometry_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  const StackedTrackerGeometry* theStackedGeometry_;$/;"	m	class:TMTrackFinder
+theStackedGeometry_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const StackedTrackerGeometry* theStackedGeometry_;$/;"	m	class:TMTrackFinderAlgorithm
+type	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^        type = cms.string('fixed'),$/;"	v
+type	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^        type = cms.string('fixed'),$/;"	v
+useCurrentProcessOnly	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi.py	/^    useCurrentProcessOnly = cms.bool(False),$/;"	v
+useCurrentProcessOnly	TMTrackTrigger/TMTrackFinder/python/mix_FIX_average_cfi_bck.py	/^    useCurrentProcessOnly = cms.bool(False),$/;"	v
+v_segment	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  Vsegment v_segment;$/;"	m	class:TMTrackFinderAlgorithm
+z	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^    double z;$/;"	m	struct:TMTrackFinderAlgorithm::extended_stub
+zError_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h	/^  double zError_;$/;"	m	class:TMTrackFinder
+zError_	TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h	/^  const double zError_;$/;"	m	class:TMTrackFinderAlgorithm
+~TMTrackFinder	TMTrackTrigger/TMTrackFinder/plugins/TMTrackFinder.cc	/^TMTrackFinder::~TMTrackFinder()$/;"	f	class:TMTrackFinder
+~TMTrackFinder	TMTrackTrigger/TMTrackFinder/src/TMTrackFinder.cc	/^TMTrackFinder::~TMTrackFinder()$/;"	f	class:TMTrackFinder
+~TMTrackFinderAlgorithm	TMTrackTrigger/TMTrackFinder/src/TMTrackFinderAlgorithm.cc	/^TMTrackFinderAlgorithm::~TMTrackFinderAlgorithm()$/;"	f	class:TMTrackFinderAlgorithm

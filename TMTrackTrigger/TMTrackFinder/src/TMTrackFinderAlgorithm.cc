@@ -27,7 +27,10 @@ TMTrackFinderAlgorithm::TMTrackFinderAlgorithm(const edm::Handle< edmNew::DetSet
   sample_type_(conf.getParameter<int>("SampleType")),
   pt_low_(conf.getParameter<double>("PtLow")),
   pt_high_(conf.getParameter<double>("PtHigh")),
-  eta_register_(conf.getParameter<bool>("EtaRegister"))
+  eta_register_(conf.getParameter<bool>("EtaRegister")),
+  broken_layer_(conf.getParameter<bool>("BrokenLayer")),
+  broken_layer_id_(conf.getParameter<int>("BrokenLayerId")),
+  nradii_(conf.getParameter<int>("NRadii"))
 {
 
   TMTrackFinderAlgorithm::run();
@@ -393,9 +396,13 @@ void TMTrackFinderAlgorithm::cell_readout(HoughArray& array, Cells& accepted_cel
     for ( ; stub!=stubs.end(); stub++) {
 
       //int r_bin = int((stub->r - 20.0) / 5.0);
+      //std::cout << "layer id "<< stub->id << " stub eta" << stub->eta<<  std::endl;
+      if(broken_layer_==false || (broken_layer_ == true && stub->id != broken_layer_id_)){
+        r_register[stub->id] = 1; // Note which r bins this HT cell has stubs in.
+        //std::cout << "layer id = " << stub->id << std::endl;
 
-      r_register[stub->id] = 1; // Note which r bins this HT cell has stubs in.
-      if(eta_register_ && ((/*stub->eta>-1.1 &&*/ stub->eta < -0.9)||(/*stub->eta<1.1 &&*/ stub->eta > 0.9) ))
+      }
+      if(eta_register_ && nradii_==5 && ((/*stub->eta>-1.1 &&*/ stub->eta < -0.9)||(/*stub->eta<1.1 &&*/ stub->eta > 0.9) ))
         radii = 4; // Looser cut in barrel/endcap transititon region.
     }
     if(debug_) std::cout << "radii = " << radii<< std::endl;

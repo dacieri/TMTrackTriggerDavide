@@ -178,6 +178,9 @@ class TMTrackFinderAlgorithm  {
   const double pt_low_;
   const double pt_high_;
   const bool eta_register_;
+  const bool broken_layer_;
+  const int broken_layer_id_;
+  const int nradii_;
   
   SegmentStubs sortedStubs_;
   SegmentCells accepted_cells_perSeg_;

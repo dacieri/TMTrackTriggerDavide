@@ -19,6 +19,9 @@ TMTrackFinder::TMTrackFinder(const edm::ParameterSet& iConfig)
   pt_high_ = iConfig.getParameter<double>("PtHigh");
   reco_ = iConfig.getParameter<bool>("RECO");
   eta_register_ = iConfig.getParameter<bool>("EtaRegister");
+  broken_layer_ = iConfig.getParameter<bool>("BrokenLayer");
+  broken_layer_id_ = iConfig.getParameter<int>("BrokenLayerId");
+  nradii_ = iConfig.getParameter<int>("NRadii");
 }
 
 
@@ -221,17 +224,17 @@ void TMTrackFinder::beginJob()
   h_stubs_filt_cells.push_back(h_stubs_filt_cells4);
   
   h_hough_pt = fs->make<TH1D>("h_hough_pt","Measured Pt from HT if MC truth match",50,pt_low_,pt_high_);
-  h_cells_pt = fs->make<TH1D>("h_cells_pt","Pt of TP which HT reconstructs", pt_high_-pt_low_,pt_low_,pt_high_);
-  h_tracks_pt = fs->make<TH1D>("h_tracks_pt","Pt of TP", pt_high_-pt_low_,pt_low_,pt_high_);
+  h_cells_pt = fs->make<TH1D>("h_cells_pt","Pt of TP which HT reconstructs", 50,0,50);
+  h_tracks_pt = fs->make<TH1D>("h_tracks_pt","Pt of TP", 50,0,50);
   h_reco_pt = fs->make<TH1D>("h_reco_pt","Offline lepton Pt",50,pt_low_,pt_high_);
-  h_gen_pt = fs->make<TH1D>("h_gen_pt","Pt of all generator particles",pt_high_-pt_low_,pt_low_,pt_high_);
-  h_tracks_reg_pt = fs->make<TH1D>("h_tracks_reg_pt","Pt of TP with N stubs at unique r > 4", pt_high_-pt_low_,pt_low_,pt_high_);
+  h_gen_pt = fs->make<TH1D>("h_gen_pt","Pt of all generator particles",50,0,50);
+  h_tracks_reg_pt = fs->make<TH1D>("h_tracks_reg_pt","Pt of TP with N stubs at unique r > 4", 50,0,50);
 
   h_candidate = fs->make<TH1D>("h_candidate", "n. candidate per event",100,0,100);
   h_cells_fake = fs->make<TH1D>("h_cells_fake","HT candidates not corresponding to TP", 500,0,5000);
   h_cells_duplicate = fs->make<TH1D>("h_cells_duplicate","", 300,0,300);
-  h_cells_total = fs->make<TH1D>("h_cells_total", "",400,0,400);
-
+  h_cells_total = fs->make<TH1D>("h_cells_total", "",500,0,5000);
+  h_fake_rate = fs->make<TH1D>("h_fake_rate", "Fake Rate; ;Fake Rate", 1000,0,1.);
   h_cells_etaphi = fs->make<TH2D>("h_cells_etaphi","Eta vs. phi of TP which HT reconstructs", 40,-3.2,3.2, 35,-3.5,3.5);
   h_tracks_etaphi = fs->make<TH2D>("h_tracks_etaphi","Eta vs. phi of TP", 40,-3.2,3.2, 35,-3.5,3.5);
   h_reco_etaphi = fs->make<TH2D>("h_reco_etaphi","Offline lepton eta vs phi", 40,-3.2,3.2, 35,-3.5,3.5);  
@@ -255,10 +258,14 @@ void TMTrackFinder::beginJob()
   h_ghost_eta = fs->make<TH1D>("h_ghost_eta","Eta of TP missed by HT", 40,-3.2,3.2); 
 
   h_tracks_reg_eta = fs->make<TH1D>("h_tracks_reg_eta","Eta of TP with N stubs at unique r > 4", 40,-3.2,3.2); 
-  h_eff0_eta = fs->make<TH1D>("h_eff0_eta","Total Efficiency vs. eta", 40,-3.2,3.2);
-  h_eff0_phi = fs->make<TH1D>("h_eff0_phi","Total Efficiency vs. phi", 35,-3.5,3.5);
-  h_eff1_eta = fs->make<TH1D>("h_eff1_eta","Algorithm Efficiency vs. eta", 40,-3.2,3.2);
-  h_eff1_phi = fs->make<TH1D>("h_eff1_phi","Algorithm Efficiency vs. phi", 35,-3.5,3.5);
+
+  // Efficiency Plots (eff0 = Total Efficiency; eff1 = Algorithm Efficiency)
+  h_eff0_eta = fs->make<TH1D>("h_eff0_eta","Total Efficiency vs. eta; #eta; Total Efficiency", 40,-3.2,3.2);
+  h_eff0_phi = fs->make<TH1D>("h_eff0_phi","Total Efficiency vs. phi; #phi; Total Efficiency", 35,-3.5,3.5);
+  h_eff0_pt = fs->make<TH1D>("h_eff0_pt", "Total Efficiency vs. p_{T}; p_{T}; Total Efficiency", 50, 0, 50);
+  h_eff1_eta = fs->make<TH1D>("h_eff1_eta","Algorithm Efficiency vs. eta; #eta; Algorithm Efficiency", 40,-3.2,3.2);
+  h_eff1_phi = fs->make<TH1D>("h_eff1_phi","Algorithm Efficiency vs. phi; #phi; Algorithm Efficiency", 35,-3.5,3.5);
+  h_eff1_pt = fs->make<TH1D>("h_eff1_pt", "Algorithm Efficiency vs. p_{T}; p_{T}; Algorithm Efficiency", 50, 0, 50);
 
   h_cells_EtaPhiPt = fs->make<TH3D>("h_cells_EtaPhiPt","kinematics of TP found by HT",40,-3.2,3.2, 35,-3.5,3.5,18,2,20);
   h_gen_EtaPhiPt = fs->make<TH3D>("h_gen_EtaPhiPt","kinematics of TP missed by HT",40,-3.2,3.2, 35,-3.5,3.5,18,2,20);
@@ -296,9 +303,14 @@ void TMTrackFinder::endJob()
   h_eff0_phi->Fill(2);
   h_eff0_phi->Sumw2();
   h_eff0_phi->Divide(h_cells_phi, h_tracks_phi);
+  h_eff0_pt->Sumw2();
+  h_eff0_pt->Fill(2);
+  h_eff0_pt->Divide(h_cells_pt, h_tracks_pt);
+
   h_eff0_eta->Sumw2();
   h_eff0_eta->Fill(2);
   h_eff0_eta->Divide(h_cells_eta, h_tracks_eta);
+
 
   h_eff1_phi->Sumw2();
   h_eff1_phi->Fill(2);
@@ -306,6 +318,11 @@ void TMTrackFinder::endJob()
   h_eff1_eta->Sumw2();
   h_eff1_eta->Fill(2);
   h_eff1_eta->Divide(h_cells_eta, h_tracks_reg_eta);
+
+  h_eff1_pt->Sumw2();
+  h_eff1_pt->Fill(2);
+  h_eff1_pt->Divide(h_cells_pt, h_tracks_reg_pt);
+
 
   for(int i=0; i<5;i++){
     h_fake_segment->SetBinContent(i+1,h_fake_cells[i]->GetMean());
@@ -575,6 +592,9 @@ void TMTrackFinder::find_tracking_particles(TMTrackFinderAlgorithm::SegmentCells
   //}
 
   //}
+  //
+  
+  double FakeRate=(double)nfake/(double)ntotal; 
   std::cout << "------------------------------"<<std::endl;
   std::cout << "ncandidates = "<< ncandidates <<std::endl;
   std::cout << "nduplicates = "<< nduplicate <<std::endl;
@@ -582,13 +602,14 @@ void TMTrackFinder::find_tracking_particles(TMTrackFinderAlgorithm::SegmentCells
   std::cout << "ntotal = "<< ntotal <<std::endl;
   std::cout << "total cells  = " << n_tot << std::endl;
   std::cout << "total ghosts  = " << nghost << std::endl;
+  std::cout << "Fake Rate = " << FakeRate << std::endl;
   std::cout << "------------------------------"<<std::endl;
 
 
   h_candidate->Fill(ncandidates);
   h_cells_fake->Fill(nfake);
   h_cells_duplicate->Fill(nduplicate);
-  h_cells_total->Fill(nduplicate+ncandidates+nfake);
+  h_cells_total->Fill(FakeRate);
   if(nghost>0)
     h_ghost->Fill(nghost);
   //  std::cout<<ntotal<<" "<<ntrue<<" "<<nfake<<" "<<nduplicate<<std::endl;
@@ -707,6 +728,7 @@ void TMTrackFinder::efficiency(TPs& numTP)
     }
     double eta = tempTPPtr->eta();
     double phi = tempTPPtr->phi();
+    double pt = tempTPPtr->pt();
     int id = abs(tempTPPtr->pdgId());
     char charid[5];
     sprintf(charid,"%d",id);
@@ -715,6 +737,7 @@ void TMTrackFinder::efficiency(TPs& numTP)
     h_tracks_eta->Fill(eta);
     h_tracks_phi->Fill(phi);
     
+    h_tracks_pt->Fill(pt);
     // If TP produced hits in at least 5 layers and in a reasonable rapidity region, continue ...
     int rbins = std::accumulate(r_register.begin(),r_register.end(),0);
     if (rbins>=5) {
@@ -732,21 +755,13 @@ void TMTrackFinder::efficiency(TPs& numTP)
         h_tracks_reg_etaphi->Fill(eta,phi);
         h_tracks_reg_eta->Fill(eta);
         h_tracks_reg_phi->Fill(phi);
+        h_tracks_reg_pt->Fill(pt);
       }
     }
           
   }
       
 
-  for ( TPs::iterator iTP = denTP.begin(); iTP != denTP.end(); ++iTP ) {
-    
-    h_tracks_pt->Fill((*iTP)->pt());
-        
-    //if (std::find(numTP.begin(), numTP.end(), (*iTP)) == numTP.end()) {
-    //std::cout<<"TP not found "<<(*iTP)->pt()<<std::endl;
-    //}
-    
-  }
       
   // Loop over TP which were found by the HT algorithm.
   for ( TPs::iterator iTP = numTP.begin(); iTP != numTP.end(); ++iTP ) {

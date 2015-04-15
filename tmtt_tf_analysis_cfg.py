@@ -18,7 +18,7 @@ options = VarParsing.VarParsing ('analysis')
 options.outputFile = 'test.root'
 options.register('someList', 'Samples/Muons/PU0.txt', VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.string, "Files to be processed")
 options.register('HBins', 25, VarParsing.VarParsing.multiplicity.singleton,  VarParsing.VarParsing.varType.int, "Number of HT Array Bins")
-
+options.register('Events',-1,VarParsing.VarParsing.multiplicity.singleton, VarParsing.VarParsing.varType.int, "Number of Events to be analyzed")
 options.parseArguments()
 
 list = FileUtils.loadListFromFile(options.someList)
@@ -28,7 +28,7 @@ secFiles = cms.untracked.vstring()
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(False) )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.Events) )
 
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string(options.outputFile)
@@ -57,8 +57,12 @@ process.demo = cms.EDAnalyzer('TMTrackFinder',
         PtLow        = cms.double(3),                        # Limits for the pT histograms
         PtHigh       = cms.double(20),
         RECO         = cms.bool(False),                      # True if you are analyzing a RECO sample
-        EtaRegister  = cms.bool(False)                       # Enable the new register cut in the transition region
-                              )
+        EtaRegister  = cms.bool(False),                       # Enable the new register cut in the transition region
+        BrokenLayer = cms.bool(False),
+        BrokenLayerId = cms.int32(3),
+        NRadii = cms.int32(4)
+
+)
 
 secFiles.extend([
         ])

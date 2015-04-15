@@ -1,0 +1,773 @@
+#include "TMTrackTrigger/TMTrackFinder/interface/TMTrackFinder.h"
+
+
+TMTrackFinder::TMTrackFinder(const edm::ParameterSet& iConfig)
+{
+  conf_ = iConfig;
+  hough_print_ = iConfig.getParameter<bool>("HoughPrint");
+  debug_ = iConfig.getParameter<bool>("Debug");
+  pt_cut_ = iConfig.getParameter<double>("StubMinPt");
+  eta_cut_ = iConfig.getParameter<double>("StubEtaRange");
+  eta_regions_ = iConfig.getParameter<std::vector<double> >("EtaRegions");
+  zError_ = iConfig.getParameter<double>("BeamErrorZ");
+  beta_range_ = iConfig.getParameter<double>("BetaRange");
+  hough_pt_ = iConfig.getParameter<double>("MinHoughPt");
+  hough_bins_x_ = iConfig.getParameter<int>("HoughBinsX");
+  hough_bins_y_ = iConfig.getParameter<int>("HoughBinsY");
+  sample_type_ = iConfig.getParameter<int>("SampleType");
+  pt_low_ = iConfig.getParameter<double>("PtLow");
+  pt_high_ = iConfig.getParameter<double>("PtHigh");
+  reco_ = iConfig.getParameter<bool>("RECO");
+  eta_register_ = iConfig.getParameter<bool>("EtaRegister");
+}
+
+
+
+TMTrackFinder::~TMTrackFinder()
+{
+}
+
+void TMTrackFinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+  iSetup.get<StackedTrackerGeometryRecord>().get(StackedGeometryHandle);
+  theStackedGeometry_ = StackedGeometryHandle.product();
+
+  // tracking particles
+  iEvent.getByLabel("mix", "MergedTrackTruth", TrackingParticleHandle_);
+  
+  // all clusters (> width 4)
+  iEvent.getByLabel("TTClustersFromPixelDigis", "ClusterInclusive", TTClusterInclusiveHandle_);
+    
+  // cluster MC truth
+  iEvent.getByLabel("TTClusterAssociatorFromPixelDigis", "ClusterAccepted", MCTruthTTClusterHandle_);
+    
+  // all stubs (passing bandwidth constraints)
+  iEvent.getByLabel("TTStubsFromPixelDigis", "StubAccepted", TTStubHandle_);
+  
+  // stub MC truth
+  iEvent.getByLabel("TTStubAssociatorFromPixelDigis", "StubAccepted", MCTruthTTStubHandle_);
+
+  // PileUp Info
+  iEvent.getByLabel("addPileupInfo", PileUpInfo_);
+
+  // GenParticles
+  iEvent.getByLabel("genParticles",GenParticles_);
+
+  if(reco_){
+    if(sample_type_==0)
+      iEvent.getByLabel("muons",RecoMuons_);     // RECO Muons
+    if(sample_type_==1)
+      iEvent.getByLabel("gsfElectrons",RecoElectrons_);    // RECO Electrons
+  }
+
+  TMTrackFinderAlgorithm trackfinder(TTStubHandle_,MCTruthTTStubHandle_,theStackedGeometry_,conf_, fs);
+
+  // Get stubs in each HT cell that has enough stubs to be a track candidate.
+  TMTrackFinderAlgorithm::SegmentCells accepted_cells = trackfinder.getAcceptedCells();
+  // Ditto, but require that these stubs also have consistent rapidity.
+  TMTrackFinderAlgorithm::SegmentCells filtered_cells = trackfinder.getFilteredCells();
+
+  TMTrackFinderAlgorithm::Listcells list_cells = trackfinder.getListCells();
+  TMTrackFinderAlgorithm::Vsegment vseg = trackfinder.getVsegment();
+  int celle=0;
+  for(unsigned int j=0; j<vseg.size();++j){
+    if(debug_)std::cout<< " Num of cells in the segment "<<j<<" = "<<vseg.at(j).segmentsize << std::endl;
+    celle=celle+vseg.at(j).segmentsize;
+  }
+    
+  std::cout<< " Num of total cells = "<<celle << std::endl;
+
+  // -------------- total efficiencies per event -------------------
+    
+  // Get list of TP that are found by the HT. Also plot a few things.
+  TPs numTP;
+  find_tracking_particles(filtered_cells,numTP);
+    
+  efficiency(numTP);
+  generation(GenParticles_);
+    
+  if(reco_){
+    if(sample_type_==0){
+      std::cout << "Analyzing Muons" <<std::endl;
+      reconstruction0(RecoMuons_);
+    }
+    if(sample_type_==1){
+      std::cout << "Analyzing Electrons" <<std::endl;
+      reconstruction1(RecoElectrons_);
+    }
+  }
+    
+  //Pile Up content
+  int npileup;
+  for(std::vector<PileupSummaryInfo>::const_iterator itTrack = PileUpInfo_->begin(); itTrack != PileUpInfo_->end(); ++itTrack){
+    npileup = itTrack->getPU_NumInteractions();
+    h_pileup->Fill(npileup);
+  }
+    
+
+
+  // ---------------- trigger tower rates --------------------------
+
+  int totalcells=0;
+  
+  for ( int eta_region=0; eta_region<5; eta_region++ ) {
+    for ( int beta_segment=0; beta_segment<64; beta_segment++ ) {
+      //beta segment 64 size 0.1
+      double beta = beta_segment * 0.1 - 3.2;
+      //std::cout << " segment (eta, beta) (" <<eta_region <<","<< beta << ")"<<std::endl;
+
+      TMTrackFinderAlgorithm::Segment segment(eta_region,beta);
+      TMTrackFinderAlgorithm::SegmentCells::iterator acc_cells = accepted_cells.find(segment);
+      if ( acc_cells!=accepted_cells.end() ) {
+	// Plot number of HT cells with track candidates recognised by HT.
+      	h_acc_cells[eta_region]->Fill(acc_cells->second.size());
+      	TMTrackFinderAlgorithm::Cells::iterator cell = acc_cells->second.begin();
+      	for ( ; cell!=acc_cells->second.end(); cell++) {
+	  // Plot number of stubs in these cells.
+      	  h_stubs_acc_cells[eta_region]->Fill(cell->size());
+      	}
+      }
+      else{
+      	h_acc_cells[eta_region]->Fill(0);
+      }
+
+      
+      TMTrackFinderAlgorithm::SegmentCells::iterator filt_cells = filtered_cells.find(segment);
+      //std::cout << " segment (eta, beta) (" <<filt_cells->first.first <<","<< filt_cells->first.second << ")"<<std::endl;
+
+      if ( filt_cells!=filtered_cells.end() ) {
+	// Plot number of HT cells with track candidates recognised by HT passing eta filter.
+      	h_filt_cells[eta_region]->Fill(filt_cells->second.size());
+      	totalcells=totalcells+filt_cells->second.size();
+        
+       
+        TMTrackFinderAlgorithm::Cells::iterator cell = filt_cells->second.begin();
+      	for ( ; cell!=filt_cells->second.end(); cell++) {
+	  // Plot number of stubs in these cells.
+      	  h_stubs_filt_cells[eta_region]->Fill(cell->size());
+      	}
+      }
+      else {
+      	h_filt_cells[eta_region]->Fill(0);
+        
+      }
+      
+      
+    }
+  }
+
+  
+}
+
+void TMTrackFinder::beginJob()
+{
+
+  h_pileup = fs->make<TH1D>("h_pileup","",250,0,250);
+
+  h_acc_cells0 = fs->make<TH1D>("h_acc_cells0","No. of HT track cands in eta region 1", 200,0,200);
+  h_acc_cells.push_back(h_acc_cells0);
+  h_acc_cells1 = fs->make<TH1D>("h_acc_cells1","No. of HT track cands in eta region 2", 200,0,200);
+  h_acc_cells.push_back(h_acc_cells1);
+  h_acc_cells2 = fs->make<TH1D>("h_acc_cells2","No. of HT track cands in eta region 3", 200,0,200);
+  h_acc_cells.push_back(h_acc_cells2);
+  h_acc_cells3 = fs->make<TH1D>("h_acc_cells3","No. of HT track cands in eta region 4", 200,0,200);
+  h_acc_cells.push_back(h_acc_cells3);
+  h_acc_cells4 = fs->make<TH1D>("h_acc_cells4","No. of HT track cands in eta region 5", 200,0,200);
+  h_acc_cells.push_back(h_acc_cells4);
+
+  h_stubs_acc_cells0 = fs->make<TH1D>("h_stubs_acc_cells0","No. of stubs in HT track cands in eta region 1", 30,0,30);
+  h_stubs_acc_cells.push_back(h_stubs_acc_cells0);
+  h_stubs_acc_cells1 = fs->make<TH1D>("h_stubs_acc_cells1","No. of stubs in HT track cands in eta region 2", 30,0,30);
+  h_stubs_acc_cells.push_back(h_stubs_acc_cells1);
+  h_stubs_acc_cells2 = fs->make<TH1D>("h_stubs_acc_cells2","No. of stubs in HT track cands in eta region 3", 30,0,30);
+  h_stubs_acc_cells.push_back(h_stubs_acc_cells2);
+  h_stubs_acc_cells3 = fs->make<TH1D>("h_stubs_acc_cells3","No. of stubs in HT track cands in eta region 4", 30,0,30);
+  h_stubs_acc_cells.push_back(h_stubs_acc_cells3);
+  h_stubs_acc_cells4 = fs->make<TH1D>("h_stubs_acc_cells4","No. of stubs in HT track cands in eta region 5", 30,0,30);
+  h_stubs_acc_cells.push_back(h_stubs_acc_cells4);
+
+  h_filt_cells0 = fs->make<TH1D>("h_filt_cells0","No. of HT track cands passing eta filter", 200,0,200);
+  h_filt_cells.push_back(h_filt_cells0);
+  h_filt_cells1 = fs->make<TH1D>("h_filt_cells1","No. of HT track cands passing eta filter", 200,0,200);
+  h_filt_cells.push_back(h_filt_cells1);
+  h_filt_cells2 = fs->make<TH1D>("h_filt_cells2","No. of HT track cands passing eta filter", 200,0,200);
+  h_filt_cells.push_back(h_filt_cells2);
+  h_filt_cells3 = fs->make<TH1D>("h_filt_cells3","No. of HT track cands passing eta filter", 200,0,200);
+  h_filt_cells.push_back(h_filt_cells3);
+  h_filt_cells4 = fs->make<TH1D>("h_filt_cells4","No. of HT track cands passing eta filter", 200,0,200);
+  h_filt_cells.push_back(h_filt_cells4);
+
+  h_fake_cells0 = fs->make<TH1D>("h_filt_cells0","No. of fake HT track (eta segment 1)", 300,0,30000);
+  h_fake_cells.push_back(h_fake_cells0);
+  h_fake_cells1 = fs->make<TH1D>("h_filt_cells1","No. of fake HT track (eta segment 2) ", 300,0,30000);
+  h_fake_cells.push_back(h_fake_cells1);
+  h_fake_cells2 = fs->make<TH1D>("h_filt_cells2","No. of fake HT track (eta segment 3)", 300,0,30000);
+  h_fake_cells.push_back(h_fake_cells2);
+  h_fake_cells3 = fs->make<TH1D>("h_filt_cells3","No. of fake HT track (eta segment 4) ", 300,0,30000);
+  h_fake_cells.push_back(h_fake_cells3);
+  h_fake_cells4 = fs->make<TH1D>("h_filt_cells4","No. of fake HT track (eta segment 5) ", 300,0,30000);
+  h_fake_cells.push_back(h_fake_cells4);
+
+  h_fake_segment = fs->make<TH1D>("h_fake_segment","Average no of fake HT track vs. eta segment",5,1,5);
+
+  h_stubs_filt_cells0 = fs->make<TH1D>("h_stubs_filt_cells0","No. of stubs in HT cands passing eta filter", 30,0,30);
+  h_stubs_filt_cells.push_back(h_stubs_filt_cells0);
+  h_stubs_filt_cells1 = fs->make<TH1D>("h_stubs_filt_cells1","No. of stubs in HT cands passing eta filter", 30,0,30);
+  h_stubs_filt_cells.push_back(h_stubs_filt_cells1);
+  h_stubs_filt_cells2 = fs->make<TH1D>("h_stubs_filt_cells2","No. of stubs in HT cands passing eta filter", 30,0,30);
+  h_stubs_filt_cells.push_back(h_stubs_filt_cells2);
+  h_stubs_filt_cells3 = fs->make<TH1D>("h_stubs_filt_cells3","No. of stubs in HT cands passing eta filter", 30,0,30);
+  h_stubs_filt_cells.push_back(h_stubs_filt_cells3);
+  h_stubs_filt_cells4 = fs->make<TH1D>("h_stubs_filt_cells4","No. of stubs in HT cands passing eta filter", 30,0,30);
+  h_stubs_filt_cells.push_back(h_stubs_filt_cells4);
+  
+  h_hough_pt = fs->make<TH1D>("h_hough_pt","Measured Pt from HT if MC truth match",50,pt_low_,pt_high_);
+  h_cells_pt = fs->make<TH1D>("h_cells_pt","Pt of TP which HT reconstructs", pt_high_-pt_low_,pt_low_,pt_high_);
+  h_tracks_pt = fs->make<TH1D>("h_tracks_pt","Pt of TP", pt_high_-pt_low_,pt_low_,pt_high_);
+  h_reco_pt = fs->make<TH1D>("h_reco_pt","Offline lepton Pt",50,pt_low_,pt_high_);
+  h_gen_pt = fs->make<TH1D>("h_gen_pt","Pt of all generator particles",pt_high_-pt_low_,pt_low_,pt_high_);
+  h_tracks_reg_pt = fs->make<TH1D>("h_tracks_reg_pt","Pt of TP with N stubs at unique r > 4", pt_high_-pt_low_,pt_low_,pt_high_);
+
+  h_candidate = fs->make<TH1D>("h_candidate", "n. candidate per event",100,0,100);
+  h_cells_fake = fs->make<TH1D>("h_cells_fake","HT candidates not corresponding to TP", 500,0,5000);
+  h_cells_duplicate = fs->make<TH1D>("h_cells_duplicate","", 300,0,300);
+  h_cells_total = fs->make<TH1D>("h_cells_total", "",400,0,400);
+
+  h_cells_etaphi = fs->make<TH2D>("h_cells_etaphi","Eta vs. phi of TP which HT reconstructs", 40,-3.2,3.2, 35,-3.5,3.5);
+  h_tracks_etaphi = fs->make<TH2D>("h_tracks_etaphi","Eta vs. phi of TP", 40,-3.2,3.2, 35,-3.5,3.5);
+  h_reco_etaphi = fs->make<TH2D>("h_reco_etaphi","Offline lepton eta vs phi", 40,-3.2,3.2, 35,-3.5,3.5);  
+  h_gen_etaphi = fs->make<TH2D>("h_gen_etaphi","Eta vs. phi of all generator particles", 40,-3.2,3.2, 35,-3.5,3.5);
+  h_ghost_etaphi = fs->make<TH2D>("h_ghost_etaphi","Eta vs phi of TP missed by HT",40,-3.2,3.2, 35,-3.5,3.5);
+  h_tracks_reg_etaphi = fs->make<TH2D>("h_tracks_reg_etaphi","Eta vs. phi of TP with N stubs at unique r > 4", 40,-3.2,3.2, 35,-3.5,3.5);
+  
+
+
+  h_cells_phi = fs->make<TH1D>("h_cells_phi","phi of TP which HT reconstructs", 35,-3.5,3.5);  
+  h_tracks_phi = fs->make<TH1D>("h_tracks_phi","Phi of TP", 35,-3.5,3.5); 
+  h_tracks_reg_phi = fs->make<TH1D>("h_tracks_reg_phi","Phi of TP with N stubs at unique r > 4", 35,-3.5,3.5); 
+  h_reco_phi = fs->make<TH1D>("h_reco_phi","Offline lepton phi", 35,-3.5,3.5); 
+  h_gen_phi = fs->make<TH1D>("h_gen_phi","Phi of all generator particles", 35,-3.5,3.5); 
+  h_ghost_phi = fs->make<TH1D>("h_ghost_phi","Phi of TP missed by HT", 35,-3.5,3.5); 
+
+  h_cells_eta = fs->make<TH1D>("h_cells_eta","eta of TP which HT reconstructs", 40,-3.2,3.2);
+  h_tracks_eta = fs->make<TH1D>("h_tracks_eta","eta of TP", 40,-3.2,3.2);
+  h_reco_eta = fs->make<TH1D>("h_reco_eta","Offline lepton eta", 40,-3.2,3.2);
+  h_gen_eta = fs->make<TH1D>("h_gen_eta","Eta of all generator particles", 40,-3.2,3.2);
+  h_ghost_eta = fs->make<TH1D>("h_ghost_eta","Eta of TP missed by HT", 40,-3.2,3.2); 
+
+  h_tracks_reg_eta = fs->make<TH1D>("h_tracks_reg_eta","Eta of TP with N stubs at unique r > 4", 40,-3.2,3.2); 
+  h_eff0_eta = fs->make<TH1D>("h_eff0_eta","Total Efficiency vs. eta", 40,-3.2,3.2);
+  h_eff0_phi = fs->make<TH1D>("h_eff0_phi","Total Efficiency vs. phi", 35,-3.5,3.5);
+  h_eff1_eta = fs->make<TH1D>("h_eff1_eta","Algorithm Efficiency vs. eta", 40,-3.2,3.2);
+  h_eff1_phi = fs->make<TH1D>("h_eff1_phi","Algorithm Efficiency vs. phi", 35,-3.5,3.5);
+
+  h_cells_EtaPhiPt = fs->make<TH3D>("h_cells_EtaPhiPt","kinematics of TP found by HT",40,-3.2,3.2, 35,-3.5,3.5,18,2,20);
+  h_gen_EtaPhiPt = fs->make<TH3D>("h_gen_EtaPhiPt","kinematics of TP missed by HT",40,-3.2,3.2, 35,-3.5,3.5,18,2,20);
+  h_ghost_EtaPhiPt = fs->make<TH3D>("h_ghost_EtaPhiPt","",40,-3.2,3.2, 35,-3.5,3.5,18,2,20);
+  h_cells_id =  fs->make<TH1D>("h_cells_id","PdG Id of TP found by HT",10,0,10);
+  h_tracks_id = fs->make<TH1D>("h_tracks_id","PdG Id of TP",10,0,10);
+  h_tracks_reg_id =  fs->make<TH1D>("h_tracks_id","PdG Id of TP with N stubs at unique r > 4 ",10,0,10);
+
+  h_stubs_good = fs->make<TH1D>("h_stubs_good","", 15,0,15);
+  h_stubs_bad = fs->make<TH1D>("h_stubs_bad","", 15,0,15);
+  h_ghost_pt = fs->make<TH1D>("h_ghost_pt","Pt of TP missed by HT",100,0,100);
+  h_ghost_stubs = fs->make<TH1D>("h_ghost_stubs","N. of stubs of TP missed by HT", 15,0,15);
+  h_ghost_register = fs->make<TH1D>("h_ghost_register","R register of TP missed by HT", 10,0,10);
+  h_ghost = fs->make<TH1D>("h_ghost","N. of TP missed by HT per event", 100,0,100);
+
+  h_ghost_regpt = fs->make<TH2D>("h_ghost_regpt","R register vs. pT of TP missed by HT", 6,0,5, 100,0,100);
+  h_ghost_id = fs->make<TH1D>("h_ghost_id","PdG Id of TP missed by HT",10,0,10);
+
+  h_goodstubs =  fs->make<TH1D>("h_goodstubs","", 15,0,15);
+  h_barcode = fs->make<TH1D>("h_barcode","", 20,0,20);
+  
+  stub_zr_10= fs->make<TH2D>("stub_zr_10","Stub r vs z for HT cells with > 10 stubs", 6000,-300.,300, 1200,0,120);
+  stub_zr_11= fs->make<TH2D>("stub_zr_11","Stub r vs z for HT cells with > 11 stubs", 6000,-300.,300, 1200,0,120);
+  stub_zr_12= fs->make<TH2D>("stub_zr_12","Stub r vs z for HT cells with > 12 stubs", 6000,-300.,300, 1200,0,120);
+  stub_zr_13= fs->make<TH2D>("stub_zr_13","Stub r vs z for HT cells with > 13 stubs", 6000,-300.,300, 1200,0,120);
+  stub_zr_14= fs->make<TH2D>("stub_zr_14","Stub r vs z for HT cells with > 14 stubs", 6000,-300.,300, 1200,0,120);
+  h_overlap =  fs->make<TH1D>("h_overlap","stubs in overlapping modules in same layer", 15,0,15);
+  h_dupstubs =  fs->make<TH1D>("h_dupstubs","stubs in same module", 15,0,15);
+  
+}
+
+
+void TMTrackFinder::endJob() 
+{
+  h_eff0_phi->Fill(2);
+  h_eff0_phi->Sumw2();
+  h_eff0_phi->Divide(h_cells_phi, h_tracks_phi);
+  h_eff0_eta->Sumw2();
+  h_eff0_eta->Fill(2);
+  h_eff0_eta->Divide(h_cells_eta, h_tracks_eta);
+
+  h_eff1_phi->Sumw2();
+  h_eff1_phi->Fill(2);
+  h_eff1_phi->Divide(h_cells_phi, h_tracks_reg_phi);
+  h_eff1_eta->Sumw2();
+  h_eff1_eta->Fill(2);
+  h_eff1_eta->Divide(h_cells_eta, h_tracks_reg_eta);
+
+  for(int i=0; i<5;i++){
+    h_fake_segment->SetBinContent(i+1,h_fake_cells[i]->GetMean());
+    h_fake_segment->SetBinError(i+1,h_fake_cells[i]->GetMeanError());
+
+      }
+
+
+}
+
+void TMTrackFinder::find_tracking_particles(TMTrackFinderAlgorithm::SegmentCells& segments, TPs& numTP)
+{  
+  //std::cout << "N of segments "<< segments.size();
+  int nfake= 0;
+  
+  int nduplicate = 0;
+  int ntrue = 0;
+  int ntotal = 0;
+  int nstubs =0;
+  int n_tot=0;
+  int ncandidates = 0;
+  Double_t Z=0.,R=0.;
+  //int ncells=0; 
+  int nsegment = 0;
+  int nghost = 0;
+  typedef TMTrackFinderAlgorithm::SegmentCells::iterator it_type;
+
+  // Loop over eta/phi segments.
+
+  //for ( int eta_region=0; eta_region<5; eta_region++ )  {
+  //for ( int beta_segment=0; beta_segment<64; beta_segment++ ) {
+  for(it_type cells = segments.begin(); cells!=segments.end(); cells++){
+    //int nfake_seg=0;
+    //ncells=cells->second.size();
+    n_tot+=cells->second.size();
+    /*
+    std::cout << "segment n." << nsegment << std::endl;
+    std::cout << "total cells in segment = " << ncells << std::endl;
+    std::cout << "segment (eta, beta) (" << cells->first.first <<","<< cells->first.second << ")"<<std::endl;
+    */
+    // Loop over stubs in accepted HT cells in this segment.
+
+    TMTrackFinderAlgorithm::Cells::iterator cell = cells->second.begin();
+    for ( ; cell!=cells->second.end(); cell++) {
+      
+      ntotal++;
+      std::map<TPptr,TMTrackFinderAlgorithm::Stubs> TPStubsMap;
+      std::vector<TPs> accStubs;
+      TPs theseTP; // TP's in this cell
+
+
+      TMTrackFinderAlgorithm::Stubs::iterator itstub = cell->begin();
+      
+      for ( ; itstub!=cell->end(); itstub++) {
+      	TMTrackFinderAlgorithm::RefStub thisStub = itstub->ref;
+      	TMTrackFinderAlgorithm::extended_stub stub = *itstub;
+      	edm::Ref< edmNew::DetSetVector< TTCluster< Ref_PixelDigi_ > >, TTCluster< Ref_PixelDigi_ > > cluster0 = thisStub->getClusterRef(0);
+      	edm::Ref< edmNew::DetSetVector< TTCluster< Ref_PixelDigi_ > >, TTCluster< Ref_PixelDigi_ > > cluster1 = thisStub->getClusterRef(1);
+	
+      	TPs TP0 = MCTruthTTClusterHandle_->findTrackingParticlePtrs(cluster0);
+      	TPs TP1 = MCTruthTTClusterHandle_->findTrackingParticlePtrs(cluster1);
+	
+      	TPs thisTPstub; // TP's in this stub
+	
+	// Store all TPs that produced this stub; and all TPs that produced stubs in this HT cell; and note list of stubs in this cell made by each TP.
+      	for ( unsigned int i=0; i<TP0.size(); i++ ) {
+      	  if (!TP0.at(i)) continue;
+      	  if ( std::find(thisTPstub.begin(), thisTPstub.end(), TP0.at(i)) == thisTPstub.end() ) thisTPstub.push_back(TP0.at(i));
+      	  if ( std::find(theseTP.begin(), theseTP.end(), TP0.at(i)) == theseTP.end() ) theseTP.push_back(TP0.at(i));
+      	  TPStubsMap[TP0.at(i)].push_back(stub);
+      	}
+      	for ( unsigned int i=0; i<TP1.size(); i++ ) {
+      	  if (!TP1.at(i)) continue;
+      	  if ( std::find(thisTPstub.begin(), thisTPstub.end(), TP1.at(i)) == thisTPstub.end() )
+            thisTPstub.push_back(TP1.at(i));
+      	  if ( std::find(theseTP.begin(), theseTP.end(), TP1.at(i)) == theseTP.end() ) 
+            theseTP.push_back(TP1.at(i));
+      	  TPStubsMap[TP1.at(i)].push_back(stub);
+      	}
+
+      	// list of unique TPs per stub for all stubs in cell
+      	accStubs.push_back(thisTPstub);
+	
+      }
+      
+      int goodstubs=0;
+      bool anytracks=false;
+      if(debug_)std::cout << "N. of TPs "<< theseTP.size() <<std::endl;
+      // list of unique TPs in entire cell
+      for (unsigned int tp=0; tp<theseTP.size(); tp++) {
+      	TPptr thisTP = theseTP.at(tp);
+        //std::cout << "TP phi position: "<< thisTP->phi() << std::endl;
+	if (thisTP->pt()<hough_pt_) continue;
+	int tpCnt=0;
+	// counting # of stubs with TP = current TP
+	for (unsigned int thistpvec=0; thistpvec<accStubs.size(); thistpvec++) {
+	  bool found=false;
+	  for (unsigned int thistp=0; thistp<accStubs.at(thistpvec).size(); thistp++) {
+	    if(found) break;
+	    if ( accStubs.at(thistpvec).at(thistp) == thisTP ) {
+	      tpCnt++;
+	      found=true;
+	    }
+	  }
+	}
+
+      	// Count number of layers with hits from the current TP, requiring 5 or more.
+      	if (tpCnt>=4) {
+          int radii = 5; // cut on min. number of stubs.
+      	  std::vector<int> r_register(40,0);
+      	  for ( TMTrackFinderAlgorithm::Stubs::iterator it = TPStubsMap[thisTP].begin(); it!=TPStubsMap[thisTP].end(); it++) {
+      	    //int rbin = int((it->r - 20.0) / 6.0);
+	    //std::cout << "rbin = " << rbin << ", layerID = "<<it->id << std::endl;
+      	    r_register[it->id] = 1;
+            if(eta_register_ && ((/*it->eta>-1.1 &&*/ it->eta < -0.9)||(/*it->eta<1.1 &&*/ it->eta >0.9)))
+              radii =4; // cut can below lower in transition region.
+      	  }
+      	  int rbins = std::accumulate(r_register.begin(),r_register.end(),0);
+      	  bool accept = ( rbins >= radii ) ? true : false ;
+
+	  // This cell does have hits from TP in 5 or more layers.
+  	  if (accept) {
+      	    anytracks=true;
+      	    goodstubs = tpCnt;
+      	    nstubs=1;
+      	    int stubid=-1;
+      	    double measured_pt=0.;
+      	    int ptstubs =0;
+      	    for ( TMTrackFinderAlgorithm::Stubs::iterator it = TPStubsMap[thisTP].begin(); it!=TPStubsMap[thisTP].end(); it++) {
+	      measured_pt= measured_pt + it->measured_pt;
+	      ptstubs++;
+      	      if(stubid!= it->id){
+		stubid=it->id;
+		//std::cout << "Stubs #"<<it->barcode<<", id = "<< it->id<< ", rbin = " << int((it->r - 20.0) / 6.0)<<", barcode = "<< it->barcode <<", nstubs: "<<nstubs<<  std::endl;
+		nstubs++;
+      	      }
+      	      //std::cout << "stubs n. " << ptstubs << ", measured pT: " << it->measured_pt << " sum pt : " << measured_pt << std::endl;
+      	    }
+      	    measured_pt=measured_pt/ptstubs;
+      	    //std::cout << "stubs n. " << ptstubs << ", measured pT: " << measured_pt << std::endl;
+	    h_hough_pt->Fill(fabs(measured_pt)); 
+      	    Int_t noverlap = -1, dupstubs = -1;
+      	    int id = 0;
+      	    uint32_t modId = 0;
+	    // Investigate HT cells with unusually large number of stubs.
+	    if(goodstubs>10 ){ // No. of stubs matched to best TrackingParticle in this HT cell.
+      	      int num=-1;
+      	      //std::cout << "Num. of goodstubs =  "<<goodstubs << std::endl;
+      	      for ( TMTrackFinderAlgorithm::Stubs::iterator it = TPStubsMap[thisTP].begin(); it!=TPStubsMap[thisTP].end(); it++) {
+		//std::cout << "Stubs #"<<num<<" position r = "<<it->r <<", z = " << it->z<<", id = "<< it->id<< ", rbin = " << int((it->r - 20.0) / 6.0)<<", barcode = "<< it->barcode << std::endl;
+		//std::cout << "Stubs GlobalPoint"<<it->position.x()<< std::endl;
+		if(num!=it->barcode){
+		  num = it->barcode;
+		  h_barcode->Fill(num);
+		  R= it->r;
+		  Z= it->z;
+		  //std::cout <<"Stub n. " << num << ", z = "<< it->z << ", R =  " << R <<", phi = "<< it->phi<<", id = "<< it->stub.getDetId().rawId()<<std::endl;
+		  //std::cout << "Stubs Position " << it->position << ", id = " << it->id << std::endl;
+		  //stubs3d->Fill(X,Y,Z);
+		  stub_zr_10->Fill(Z,R);
+		  if(goodstubs>11)
+		    stub_zr_11->Fill(Z,R);
+		  if(goodstubs>12)
+		    stub_zr_12->Fill(Z,R);
+		  if(goodstubs>13)
+		    stub_zr_13->Fill(Z,R);
+		  if(goodstubs>14)
+		    stub_zr_14->Fill(Z,R);
+  		    	      
+		  if(id==it->id && modId!=it->stub.getDetId().rawId()) // 2 stubs in same layer with different modules
+		    noverlap++;
+		  else
+		    id=it->id;
+		  // Check if two stubs in same module.
+		  if(modId==it->stub.getDetId().rawId()){
+                    if(debug_) 
+                      std::cout << "DUPLICATE module ID = " << it->stub.getDetId().rawId() << ", stub Id = "<< it->id <<std::endl; 
+		    dupstubs++;
+                  }
+		  else{
+		    modId=it->stub.getDetId().rawId();
+                    //std::cout << " module ID = " << it->stub.getDetId().rawId() << ", stub Id = "<< it->id << std::endl;
+		  }
+		}    
+      	      }
+      	    }
+	
+	    if(debug_) std::cout << "dupstubs =" << dupstubs << ", noverlap = " << noverlap;
+	
+	    h_dupstubs->Fill(dupstubs);
+	    h_overlap->Fill(noverlap);
+
+	    //std::cout<<"More than 10 stubs: "<<stop <<", lessthanten = "<< lessthanten<<std::endl; 
+            if ( std::find(numTP.begin(), numTP.end(), thisTP) == numTP.end() ) {
+              numTP.push_back(thisTP); // Store tracking particles found by by HT.
+              ntrue++;
+              double eta = thisTP->eta();
+	      double phi = thisTP->phi();
+              //std::cout << "filled phi = "<< phi<< std::endl;
+	      double pt = thisTP->pt();
+	      int id = abs(thisTP->pdgId());
+	      char charid[5];
+	      sprintf(charid,"%d",id);
+	      if(thisTP->pt()>hough_pt_){
+		    h_cells_EtaPhiPt->Fill(eta,phi,pt);
+		    h_cells_id->Fill(charid,1);
+	    	h_cells_etaphi->Fill(eta,phi);
+		    h_cells_eta->Fill(eta);
+		    h_cells_phi->Fill(phi);
+	      }
+              //if(thisTP->pt()>pt_low_)
+              ncandidates++;      
+	    }   
+	    else nduplicate++;
+	  }
+	  else{
+            // Fill histogram of not tracked particles (Ghosts)
+	    if(thisTP->pt()>=hough_pt_  && (std::find(numTP.begin(), numTP.end(), thisTP) == numTP.end())){
+	      nghost++;
+
+	      double eta = thisTP->eta();
+	      double phi = thisTP->phi();
+	      double pt = thisTP->pt();
+	      int id = abs(thisTP->pdgId());
+	      char charid[5];
+	      sprintf(charid,"%d",id);
+	      h_ghost_id->Fill(charid,1);
+	      h_ghost_etaphi->Fill(eta,phi);
+	      h_ghost_eta->Fill(eta);
+	      h_ghost_phi->Fill(phi);
+	      h_ghost_pt->Fill(pt);
+	      h_ghost_EtaPhiPt->Fill(eta,phi,pt);
+	      h_ghost_stubs->Fill(tpCnt);
+	      h_ghost_register->Fill(rbins);
+	      h_ghost_regpt->Fill(rbins,pt);
+	      
+	    }
+	  }
+
+	}
+          
+      }
+        
+      if (!anytracks) {
+	//std::cout << "total fake cells in segment = " << nfake << std::endl;
+	nfake++;
+      }
+      if (goodstubs) {
+	h_goodstubs->Fill(nstubs); // stubs by main TP found in cell.
+	//std::cout<< "h_goodstubs Filled"<<std::endl;
+	h_stubs_good->Fill(goodstubs); // stubs by main TP in cell
+	h_stubs_bad->Fill(cell->size()-goodstubs);
+      }
+
+        
+          
+          
+    }
+        
+      
+      
+    //     if(debug_){
+        
+    //h_fake_cells[nsegment]->Fill(nfake_seg);
+    nsegment++;
+}
+  //}
+
+  //}
+  std::cout << "------------------------------"<<std::endl;
+  std::cout << "ncandidates = "<< ncandidates <<std::endl;
+  std::cout << "nduplicates = "<< nduplicate <<std::endl;
+  std::cout << "nfakes = "<< nfake <<std::endl;
+  std::cout << "ntotal = "<< ntotal <<std::endl;
+  std::cout << "total cells  = " << n_tot << std::endl;
+  std::cout << "total ghosts  = " << nghost << std::endl;
+  std::cout << "------------------------------"<<std::endl;
+
+
+  h_candidate->Fill(ncandidates);
+  h_cells_fake->Fill(nfake);
+  h_cells_duplicate->Fill(nduplicate);
+  h_cells_total->Fill(nduplicate+ncandidates+nfake);
+  if(nghost>0)
+    h_ghost->Fill(nghost);
+  //  std::cout<<ntotal<<" "<<ntrue<<" "<<nfake<<" "<<nduplicate<<std::endl;
+
+
+
+}
+
+
+void TMTrackFinder::reconstruction0(const edm::Handle <std::vector<reco::Muon>>& Muons){
+  // Fill offline Pt of muons
+  for(std::vector<reco::Muon>::const_iterator itTrack = Muons->begin();
+      itTrack != Muons->end();
+      ++itTrack) {
+    //  your code
+    if(itTrack->pt()>9.5){
+      h_reco_etaphi->Fill(itTrack->eta(),itTrack->phi());
+      h_reco_eta->Fill(itTrack->eta());
+      h_reco_phi->Fill(itTrack->phi());
+      h_reco_pt->Fill(itTrack->pt());
+    }
+  }
+
+
+
+}
+
+
+void TMTrackFinder::reconstruction1(const edm::Handle <std::vector<reco::GsfElectron>>& Electrons){
+  // Fill offline Pt of electrons
+  for(std::vector<reco::GsfElectron>::const_iterator itTrack = Electrons->begin();
+      itTrack != Electrons->end();
+      ++itTrack) {
+    //  your code
+    if(itTrack->pt()>9.5){
+      h_reco_etaphi->Fill(itTrack->eta(),itTrack->phi());
+      h_reco_eta->Fill(itTrack->eta());
+      h_reco_phi->Fill(itTrack->phi());
+      h_reco_pt->Fill(itTrack->pt());
+    }
+  }
+
+
+
+}
+
+
+
+
+
+void TMTrackFinder::generation(const edm::Handle <std::vector<reco::GenParticle>> &Gens){
+  // Plot kinematics of all generator particles
+  for(std::vector<reco::GenParticle>::const_iterator itTrack = Gens->begin();
+      itTrack != Gens->end();
+      ++itTrack) {
+    //  your code
+    if(itTrack->pt()>3){
+      h_gen_etaphi->Fill(itTrack->eta(),itTrack->phi());
+      h_gen_eta->Fill(itTrack->eta());
+      h_gen_phi->Fill(itTrack->phi());
+      h_gen_pt->Fill(itTrack->pt());
+      h_gen_EtaPhiPt->Fill(itTrack->eta(),itTrack->phi(),itTrack->pt());
+    }
+  }
+
+
+
+}
+
+
+
+
+
+
+
+void TMTrackFinder::efficiency(TPs& numTP)
+{
+  
+  
+  int eid = -10;
+  int tid = -10;
+  TPs denTP;
+  
+  int tpCnt = 0;
+  // Loop over all TP with Pt exceeding HT cuts.
+  for ( std::vector< TrackingParticle >::const_iterator iterTP = TrackingParticleHandle_->begin(); iterTP != TrackingParticleHandle_->end(); ++iterTP ) {
+        
+    TPptr tempTPPtr( TrackingParticleHandle_, tpCnt++ );
+
+    if (tempTPPtr->pt()<hough_pt_ || fabs(tempTPPtr->eta())>eta_cut_) continue;
+
+    std::vector<int> r_register(40,0);
+        
+    std::vector<SimTrack> g4tracks = tempTPPtr->g4Tracks();
+    std::vector<SimTrack>::const_iterator iterST = g4tracks.begin();
+
+    eid = tempTPPtr->eventId().event();
+
+    for ( ; iterST != g4tracks.end(); iterST++) {
+          
+      tid = iterST->trackId();
+      
+      // Get stubs produced by this TP
+      std::vector< edm::Ref< edmNew::DetSetVector< TTStub< Ref_PixelDigi_ > >, TTStub< Ref_PixelDigi_ > > > theseStubs = MCTruthTTStubHandle_->findTTStubRefs( tempTPPtr );
+      for ( unsigned int js = 0; js < theseStubs.size(); js++ )
+        {
+	  
+          GlobalPoint pos = theStackedGeometry_->findGlobalPosition(&(*theseStubs.at(js)));
+	  
+          if (pos.eta()<-2.55 || pos.eta()>2.55) continue;
+          
+          int rbin = int((pos.perp() - 20.0) / 6.0);
+          r_register[rbin] = 1;
+	  
+        }
+    }
+    double eta = tempTPPtr->eta();
+    double phi = tempTPPtr->phi();
+    int id = abs(tempTPPtr->pdgId());
+    char charid[5];
+    sprintf(charid,"%d",id);
+    h_tracks_id->Fill(charid,1);
+    h_tracks_etaphi->Fill(eta,phi);
+    h_tracks_eta->Fill(eta);
+    h_tracks_phi->Fill(phi);
+    
+    // If TP produced hits in at least 5 layers and in a reasonable rapidity region, continue ...
+    int rbins = std::accumulate(r_register.begin(),r_register.end(),0);
+    if (rbins>=5) {
+
+      //if((eid==0)&&(tid<5)&&(tid>0)) {
+      denTP.push_back(tempTPPtr);
+      if(false)std::cout<<eid<<" "<<tid<<" "<<tempTPPtr->pt()<<std::endl;
+      
+      
+      
+      // Plot kinematics of TPs which could potentially be reconstructed.
+      if(tempTPPtr->pt()>hough_pt_){
+	h_tracks_reg_id->Fill(charid,1);
+
+        h_tracks_reg_etaphi->Fill(eta,phi);
+        h_tracks_reg_eta->Fill(eta);
+        h_tracks_reg_phi->Fill(phi);
+      }
+    }
+          
+  }
+      
+
+  for ( TPs::iterator iTP = denTP.begin(); iTP != denTP.end(); ++iTP ) {
+    
+    h_tracks_pt->Fill((*iTP)->pt());
+        
+    //if (std::find(numTP.begin(), numTP.end(), (*iTP)) == numTP.end()) {
+    //std::cout<<"TP not found "<<(*iTP)->pt()<<std::endl;
+    //}
+    
+  }
+      
+  // Loop over TP which were found by the HT algorithm.
+  for ( TPs::iterator iTP = numTP.begin(); iTP != numTP.end(); ++iTP ) {
+        
+    h_cells_pt->Fill((*iTP)->pt());
+        
+  } 
+
+}
+
+
+
+
+// ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
+void TMTrackFinder::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  //The following says we do not know what parameters are allowed so do no validation
+  // Please change this to state exactly what you do use, even if it is no parameters
+  edm::ParameterSetDescription desc;
+  desc.setUnknown();
+  descriptions.addDefault(desc);
+}
+
+//define this as a plug-in
+DEFINE_FWK_MODULE(TMTrackFinder);

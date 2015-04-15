@@ -1,0 +1,583 @@
+
+
+#include "TMTrackTrigger/TMTrackFinder/interface/TMTrackFinderAlgorithm.h"
+
+
+TMTrackFinderAlgorithm::TMTrackFinderAlgorithm(const edm::Handle< edmNew::DetSetVector< TTStub<Ref_PixelDigi_> > >& TTStubHandle,
+					       const edm::Handle< TTStubAssociationMap<Ref_PixelDigi_> >& MCTruthTTStubHandle,
+					       const StackedTrackerGeometry* theStackedGeometry,
+					       const edm::ParameterSet& conf,
+					       const edm::Service<TFileService> fs):
+
+  TTStubHandle_(TTStubHandle),
+  MCTruthTTStubHandle_(MCTruthTTStubHandle),
+  theStackedGeometry_(theStackedGeometry),
+  h_hough(fs->make<TH2D>("h_hough","",32,-0.003,0.003,32,0.0,0.2)),
+  //h_hough_noreg(fs->make<TH2D>("h_hough","",32,-0.003,0.003,32,0.0,0.2)),
+  hough_print_(conf.getParameter<bool>("HoughPrint")),
+  debug_(conf.getParameter<bool>("Debug")),
+  pt_cut_(conf.getParameter<double>("StubMinPt")),
+  eta_cut_(conf.getParameter<double>("StubEtaRange")),
+  eta_regions_(conf.getParameter<std::vector<double> >("EtaRegions")),
+  zError_(conf.getParameter<double>("BeamErrorZ")),
+  beta_range_(conf.getParameter<double>("BetaRange")),
+  hough_pt_(conf.getParameter<double>("MinHoughPt")),
+  hough_bins_x_(conf.getParameter<int>("HoughBinsX")),
+  hough_bins_y_(conf.getParameter<int>("HoughBinsY")),
+  sample_type_(conf.getParameter<int>("SampleType")),
+  pt_low_(conf.getParameter<double>("PtLow")),
+  pt_high_(conf.getParameter<double>("PtHigh"))
+
+{
+
+  TMTrackFinderAlgorithm::run();
+
+}
+
+
+
+TMTrackFinderAlgorithm::~TMTrackFinderAlgorithm()
+{
+
+}
+
+
+
+void TMTrackFinderAlgorithm::run()
+{
+
+
+  collect_stubs();
+
+  
+
+  SegmentStubs::iterator segment = sortedStubs_.begin();
+
+  for ( ; segment!=sortedStubs_.end(); segment++) {
+    
+    //int eta_region = segment->first.first;
+    double beta = segment->first.second;
+    //std::cout<< "beta = " << beta << std::endl;
+    Stubs segment_stubs = segment->second; 
+
+
+    HoughArray rphi_array;
+    rphi_transform(segment_stubs,rphi_array,beta);
+    
+
+    Cells accepted_cells;
+    cell_readout(rphi_array,accepted_cells);
+    accepted_cells_[segment->first] = accepted_cells;
+
+
+    Cells filtered_cells;
+    eta_filter(accepted_cells,filtered_cells);
+    filtered_cells_[segment->first] = filtered_cells;
+
+      
+  }
+
+
+
+
+}
+
+
+
+const TMTrackFinderAlgorithm::SegmentStubs &TMTrackFinderAlgorithm::getSortedStubs() const
+{
+  
+  return sortedStubs_;
+}
+
+
+
+const TMTrackFinderAlgorithm::SegmentCells &TMTrackFinderAlgorithm::getAcceptedCells() const
+{
+  
+  return accepted_cells_;
+}
+
+
+
+const TMTrackFinderAlgorithm::SegmentCells &TMTrackFinderAlgorithm::getFilteredCells() const
+{
+  
+  return filtered_cells_;
+}
+
+
+
+void TMTrackFinderAlgorithm::collect_stubs()
+{
+
+  int counter = 0; 
+  double X=0.,Y=0.,Z=0.;
+ // double LayerId = -1;
+  edmNew::DetSetVector< TTStub<Ref_PixelDigi_> >::const_iterator module =  TTStubHandle_->begin();
+  for ( ; module!=TTStubHandle_->end(); module++) {
+
+    edmNew::DetSet< TTStub<Ref_PixelDigi_> >::const_iterator stub =  module->begin();
+    for ( ; stub!=module->end(); stub++) {
+
+
+      GlobalPoint pos = theStackedGeometry_->findGlobalPosition(stub);
+
+      StackedTrackerDetId stDetId = stub->getDetId();
+   
+      RefStub theRef = edmNew::makeRefTo(TTStubHandle_, stub );
+      int genuine = (MCTruthTTStubHandle_->isGenuine(theRef)==1) ? 1 : 0;
+
+      // pt of track generating stub only applies to genuine correlations
+      // fake correlations are assigned pt = 0
+
+      double pt = 0;
+      //int pdg = 0;
+	
+      if (genuine) {
+	edm::Ptr< TrackingParticle > tpPtr = MCTruthTTStubHandle_->findTrackingParticlePtr(theRef);
+	pt = tpPtr->pt();
+	//std::vector<SimTrack> g4tracks = tpPtr->g4Tracks();
+	//pdg = g4tracks.begin()->type();
+      }
+
+
+      // bend direction is reversed for the +ve endcap
+
+      double dir = stub->getTriggerBend() *
+	((pos.eta()>0)&&(stDetId.isEndcap()) ? -1: 1);
+
+
+      // extract dphi from bend information and sensor separation in rphi (delta)
+      // extract id of layer/disk; barrel [0->6], endcap [7->16]
+
+      double dphi;
+      int id;
+
+      const GeomDetUnit* det0 = theStackedGeometry_->idToDetUnit( stDetId, 0 );
+      const GeomDetUnit* det1 = theStackedGeometry_->idToDetUnit( stDetId, 1 );
+      
+      double R0 = det0->position().perp();
+      double R1 = det1->position().perp();
+      double Z0 = det0->position().z();
+      double Z1 = det1->position().z();
+
+      double pitch;
+
+      if (theStackedGeometry_->isPSModule(stDetId)) {
+	pitch = 0.010;
+      } else {
+	pitch = 0.009;
+      }
+
+      
+      if (stDetId.isBarrel()) {
+	double delta = R1-R0;
+	dphi = ( dir * pitch ) / delta ;
+	id = stDetId.iLayer();
+      } else {
+	double delta = (Z1-Z0) * R0 / Z0;
+	dphi = ( dir * pitch ) / delta ;
+	id = (theStackedGeometry_->isPSModule(stDetId)) ? 
+	  (stDetId.iSide()-1) * 16 + (stDetId.iDisk() + 11) : 
+	  (stDetId.iSide()-1) * 16 + (stDetId.iDisk() + 6);
+      }
+
+
+      double beta = pos.phi() + dphi;
+
+      double beta_bin = (beta + 3.1) / beta_range_ ;
+
+      int bin_segment1 = 2 * int(beta_bin) + 1;
+      int bin_segment2 = ( ( beta_bin - int(beta_bin) ) < 0.5 ) ? bin_segment1 - 1 : bin_segment1 + 1;
+
+      if ( (bin_segment1 > 63) || 
+	   (bin_segment2 > 63) || 
+	   (bin_segment1 < 0) || 
+	   (bin_segment2 < 0) ) {
+	
+	std::cout << "Warning: Beta segment out of range!" << std::endl;
+	continue;
+      }
+
+      double beta_segment1 = 0.5 * beta_range_ * (bin_segment1 - 1) - 3.1;
+      double beta_segment2 = 0.5 * beta_range_ * (bin_segment2 - 1) - 3.1;
+
+
+
+      if ( ( pt > pt_cut_ ) && ( fabs(pos.eta()) < eta_cut_ ) ) {
+	
+	counter++;
+	extended_stub theStub;
+
+	theStub.barcode = counter;
+	theStub.stub = *stub;
+	theStub.ref = edmNew::makeRefTo(TTStubHandle_, stub );
+	theStub.position = pos;
+	theStub.eta = pos.eta();
+	theStub.phi = pos.phi();
+	theStub.r = pos.perp();
+	theStub.z = pos.z();
+	theStub.isReal = genuine;
+	theStub.dphi = dphi;
+	theStub.id = id;
+	theStub.pt = pt;
+    	theStub.measured_pt = 0.;
+	
+
+	
+	unsigned int region = 0;
+	
+	for ( ; region<(eta_regions_.size()-1); region++) {
+	  //std::cout << "eta region n. "<<region << std::endl;
+	  
+	  double etaBound = eta_regions_[region];
+	  double etaSlice = eta_regions_[region+1] - etaBound;
+
+	  double maxR = 110;
+	  
+	  double modMinZ = std::min(Z0,Z1);
+	  double modMaxZ = std::max(Z0,Z1);
+	  double modMinR = std::min(R0,R1);
+	  double modMaxR = std::max(R0,R1);
+	  
+	  double etaSliceZ1 = maxR / tan( 2 * atan(exp(-etaBound)) );
+	  double etaSliceZ2 = maxR / tan( 2 * atan(exp(-etaBound - etaSlice)) );
+	  
+	  double etaDist1 =  modMaxZ - ((etaSliceZ1 >= 0 ? modMinR : modMaxR)*(etaSliceZ1 + zError_)/maxR - zError_);
+	  double etaDist2 = -modMinZ + ((etaSliceZ2 >= 0 ? modMaxR : modMinR)*(etaSliceZ2 - zError_)/maxR + zError_);
+	 
+          
+	  if( (etaDist1 > 0) && (etaDist2 > 0) ) {
+	    
+
+	    Segment s1(region,beta_segment1);
+	    Segment s2(region,beta_segment2);
+	    
+        double dist = sqrt((X-theStub.position.x())*(X-theStub.position.x())+(Y-theStub.position.y())*(Y-theStub.position.y())+(Z-theStub.position.z())*(Z-theStub.position.z()));
+        
+        if(dist>.00){
+	        sortedStubs_[s1].push_back(theStub); 
+	        sortedStubs_[s2].push_back(theStub);
+        }
+	  }
+	  
+
+	}
+
+    //LayerId = theStub.id;
+	
+    X=theStub.position.x();
+    Y=theStub.position.y();
+    Z=theStub.position.z();
+
+      }
+      
+    }
+  }
+  	  std::cout<< "counter " << counter <<std::endl;
+
+
+}
+
+
+
+void TMTrackFinderAlgorithm::rphi_transform(Stubs& stubs, HoughArray& array, double beta)
+{
+
+  Stubs::iterator st = stubs.begin();
+    
+  for ( ; st!=stubs.end(); st++) {
+   
+    extended_stub stub = *st;
+   
+    double hough_x_min = -0.006 / hough_pt_;
+    double hough_x_max = 0.006 / hough_pt_;
+    int hough_x_bins = hough_bins_x_;
+
+    double hough_y_min = 0.0;
+    double hough_y_max = beta_range_;
+    int hough_y_bins = hough_bins_y_;
+
+
+    for (int j=0; j<hough_x_bins; j++) {
+
+      double m_scale = (hough_x_max - hough_x_min) / (1.0 * hough_x_bins);
+
+      double m_min = (m_scale * j) + hough_x_min - 0.5*m_scale;
+      double m_max = (m_scale * j) + hough_x_min + 0.5*m_scale;
+
+      double c_scale = (hough_y_max - hough_y_min) / (1.0 * hough_y_bins);
+
+      double c_min = stub.phi - beta - stub.r * m_max;
+      double c_max = stub.phi - beta - stub.r * m_min;
+
+
+      if ( (c_max>hough_y_min) && (c_min<hough_y_max) ) {
+
+
+	int nbins = (int) std::ceil( (c_max - c_min) / c_scale ) ; 
+
+	for (int bin=0; bin<nbins; bin++) {
+	  
+	  double k = (c_min - hough_y_min) / c_scale + 1.0 * bin;
+	  
+	  if ( (k>=0) && (k<hough_y_bins) ) {
+	    stub.measured_pt = -0.006/(j*m_scale + hough_x_min)  ;
+	    stub.pt = -0.006/(j*m_scale + hough_x_min)  ;
+
+std::pair<int,int> index(j,abs(k));
+	    array[index].push_back(stub);
+	  }
+	  
+	}
+      }
+      
+    }
+  }
+  
+}
+
+
+
+void TMTrackFinderAlgorithm::cell_readout(HoughArray& array, Cells& accepted_cells)
+{
+
+  HoughArray::iterator cell = array.begin();
+
+  for ( ; cell!=array.end(); cell++) {
+    
+    int j = cell->first.first;
+    int k = cell->first.second;
+
+    Stubs stubs = cell->second;
+
+
+//    std::vector<int> r_register(16,0);
+    std::vector<int> r_register(20,0);
+    //std::vector<std::vector<int> > eta_register(5, r_register);
+
+    Stubs::iterator stub = stubs.begin();
+  
+    for ( ; stub!=stubs.end(); stub++) {
+
+      int r_bin = int((stub->r - 20.0) / 5.0);
+      //int etabin = int((stub->eta + 2.5) / 1.0);
+
+      r_register[r_bin] = 1;
+      //(eta_register[etabin])[r_bin] = 1;
+
+    }
+
+
+    int r_bins = std::accumulate(r_register.begin(),r_register.end(),0);
+    bool accept = ( r_bins >= 5 ) ? true : false ;
+    /*
+    std::vector<std::vector<int> >::iterator reg = eta_register.begin();
+        for(; reg!=eta_register.end(); reg++) {
+
+	  int rbins = std::accumulate((*reg).begin(),(*reg).end(),0);
+	  if (rbins>=5) accept = true;
+                        
+        }
+    */
+    /*
+    if(r_bins>=1 && hough_print_){
+        if(stub->eta<.61 && stub->eta>-.61 && (stub->phi + stub->dphi) > 0. && (stub->phi + stub->dphi) < 0.2) 
+             h_hough_noreg->SetBinContent(j+1,k+1,cell->second.size());
+    
+    }
+*/
+
+    if (accept) {
+      
+      accepted_cells.push_back(stubs);
+
+
+     if (hough_print_) {
+	
+	std::cout << "*********************" << std::endl;
+	std::cout << "m " << j << " : c " << k << "n. Stubs"<< stubs.size()<< std::endl;
+	if((stub->phi +stub->dphi) >0 && (stub->phi +stub->dphi)<0.2)
+	 h_hough->SetBinContent(j+1,k+1,cell->second.size());
+     
+	
+	if(debug_){
+	  stub = stubs.begin();
+	  for ( ; stub!=stubs.end(); stub++) {
+	    
+	    std::cout<<std::setprecision(3)
+		     <<stub->eta<<"\t"
+		     <<stub->phi<<"\t"
+		     <<stub->r<<"\t"
+		     <<stub->z<<"\t"
+		     <<stub->isReal<<"\t"
+		     <<stub->dphi<<"\t"
+		     <<stub->id<<"\t"
+		     <<stub->pt<<"\t"
+		     <<stub->measured_pt<<"\t"
+		     <<(stub->z)/(stub->r)<<std::endl;
+	  }
+	}
+      }
+      
+    }
+  }
+
+
+}
+
+
+
+void TMTrackFinderAlgorithm::eta_filter(Cells& cells, Cells& filtered_cells)
+{
+
+    Cells::iterator stubs = cells.begin();
+  
+    for ( ; stubs!=cells.end(); stubs++) {
+
+      
+      std::vector<int> eta_hist(64,0);
+
+      
+      Stubs::iterator stub = stubs->begin();
+  
+      for ( ; stub!=stubs->end(); stub++) {
+
+	int eta_bin = int((stub->eta + 3.2) / 0.1);
+
+	if ( ( eta_bin < 0 ) || ( eta_bin > 63) ) { std::cout << "Warning: Filter bin " << eta_bin << " out of range!" << std::endl; }
+	else { eta_hist[eta_bin]++; }
+
+      }
+
+      
+      int modebin = -1;
+      int maxbin = 0;
+
+      for (int i=0; i<64; i++) {
+	
+	if (eta_hist[i] > maxbin) {
+	  modebin=i;
+	  maxbin=eta_hist[i];
+	}
+
+      }
+
+      if ( modebin==-1 ) std::cout << "Warning: Could not find filter mode bin!" << std::endl; 
+
+
+      Stubs tempstubs;
+      double meaneta = modebin * 0.1 - 3.2;
+      double deltaeta = (-0.0775 * fabs(meaneta)) + 0.35;
+
+      stub = stubs->begin();
+
+
+      for ( ; stub!=stubs->end(); stub++) {
+
+	if ( (stub->eta > (meaneta - deltaeta)) && (stub->eta < (meaneta + deltaeta)) ) {
+
+	  tempstubs.push_back(*stub);
+
+	}
+	
+      }
+
+      if (tempstubs.size()>=5) {
+	
+	filtered_cells.push_back(tempstubs);
+
+	if (debug_) {
+	  
+	  std::cout << "==============================" << std::endl;
+	  std::cout << "mode eta " << meaneta << " : delta eta " << deltaeta << std::endl;
+	  
+	  stub = tempstubs.begin();
+	  for ( ; stub!=tempstubs.end(); stub++) {
+	    
+	    std::cout<<std::setprecision(3)
+		     <<stub->eta<<"\t"
+		     <<stub->phi<<"\t"
+		     <<stub->r<<"\t"
+		     <<stub->z<<"\t"
+		     <<stub->isReal<<"\t"
+		     <<stub->dphi<<"\t"
+		     <<stub->id<<"\t"
+		     <<stub->pt<<"\t"
+		     <<(stub->z)/(stub->r)<<std::endl;
+	    
+	  }
+	}
+	
+	
+      }
+      
+
+    }
+
+}
+
+
+
+void TMTrackFinderAlgorithm::bend_filter(Cells& cells, Cells& filtered_cells)
+{  
+  
+  Cells::iterator cell = cells.begin();
+
+  for ( ; cell!=cells.end(); cell++) {
+
+
+    Stubs stubsPlus;
+    Stubs stubsMinus;
+    Stubs stubsZero;
+         
+    Stubs::iterator stub = cell->begin();
+
+    for ( ; stub!=cell->end(); stub++) {
+      stub->dphi>0 ? stubsPlus.push_back(*stub) : (stub->dphi<0 ? stubsMinus.push_back(*stub) : stubsZero.push_back(*stub) ) ;
+    }
+
+    if (stubsPlus.size()==stubsMinus.size()) continue;
+
+
+    Stubs stubsSameSign = stubsPlus.size() > stubsMinus.size() ? stubsPlus : stubsMinus ;
+    stubsSameSign.insert(stubsSameSign.end(),stubsZero.begin(),stubsZero.end());
+
+
+    if (stubsSameSign.size()>=5) {
+      filtered_cells.push_back(stubsSameSign);
+    }
+
+  }
+
+}
+
+
+
+void TMTrackFinderAlgorithm::r_filter(Cells& cells, Cells& filtered_cells)
+{  
+
+  Cells::iterator cell = cells.begin();
+
+  for ( ; cell!=cells.end(); cell++) {
+
+
+    std::vector<int> r_register(20,0);
+
+    Stubs::iterator stub = cell->begin();
+
+    for ( ; stub!=cell->end(); stub++) {
+
+      r_register[int((stub->r - 20.0) / 5.0)] = 1;
+
+    }
+
+
+    if (std::accumulate(r_register.begin(),r_register.end(),0) >= 5) {
+      filtered_cells.push_back((*cell));
+     
+    }
+
+  }
+}

@@ -431,7 +431,7 @@ void TMTrackFinder::find_tracking_particles(TMTrackFinderAlgorithm::SegmentCells
 
       	// Count number of layers with hits from the current TP, requiring 5 or more.
       	if (tpCnt>=4) {
-          int radii = 5; // cut on min. number of stubs.
+          int radii = nradii_; // cut on min. number of stubs.
       	  std::vector<int> r_register(40,0);
       	  for ( TMTrackFinderAlgorithm::Stubs::iterator it = TPStubsMap[thisTP].begin(); it!=TPStubsMap[thisTP].end(); it++) {
       	    //int rbin = int((it->r - 20.0) / 6.0);
@@ -526,13 +526,13 @@ void TMTrackFinder::find_tracking_particles(TMTrackFinderAlgorithm::SegmentCells
 	      int id = abs(thisTP->pdgId());
 	      char charid[5];
 	      sprintf(charid,"%d",id);
-	      if(thisTP->pt()>hough_pt_){
+	      
 		    h_cells_EtaPhiPt->Fill(eta,phi,pt);
 		    h_cells_id->Fill(charid,1);
 	    	h_cells_etaphi->Fill(eta,phi);
 		    h_cells_eta->Fill(eta);
 		    h_cells_phi->Fill(phi);
-	      }
+      
               //if(thisTP->pt()>pt_low_)
               ncandidates++;      
 	    }   
@@ -607,9 +607,9 @@ void TMTrackFinder::find_tracking_particles(TMTrackFinderAlgorithm::SegmentCells
 
 
   h_candidate->Fill(ncandidates);
-  h_cells_fake->Fill(nfake);
+  h_cells_fake->Fill(FakeRate);
   h_cells_duplicate->Fill(nduplicate);
-  h_cells_total->Fill(FakeRate);
+  h_cells_total->Fill(n_tot);
   if(nghost>0)
     h_ghost->Fill(nghost);
   //  std::cout<<ntotal<<" "<<ntrue<<" "<<nfake<<" "<<nduplicate<<std::endl;
@@ -732,15 +732,16 @@ void TMTrackFinder::efficiency(TPs& numTP)
     int id = abs(tempTPPtr->pdgId());
     char charid[5];
     sprintf(charid,"%d",id);
-    h_tracks_id->Fill(charid,1);
-    h_tracks_etaphi->Fill(eta,phi);
-    h_tracks_eta->Fill(eta);
-    h_tracks_phi->Fill(phi);
     
-    h_tracks_pt->Fill(pt);
-    // If TP produced hits in at least 5 layers and in a reasonable rapidity region, continue ...
+    if(pt>=hough_pt_){
+        h_tracks_id->Fill(charid,1);
+        h_tracks_etaphi->Fill(eta,phi);
+        h_tracks_eta->Fill(eta);
+        h_tracks_phi->Fill(phi);
+        h_tracks_pt->Fill(pt);
+    }    // If TP produced hits in at least 5 layers and in a reasonable rapidity region, continue ...
     int rbins = std::accumulate(r_register.begin(),r_register.end(),0);
-    if (rbins>=5) {
+    if (rbins>=nradii_) {
 
       //if((eid==0)&&(tid<5)&&(tid>0)) {
       denTP.push_back(tempTPPtr);
@@ -750,8 +751,7 @@ void TMTrackFinder::efficiency(TPs& numTP)
       
       // Plot kinematics of TPs which could potentially be reconstructed.
       if(tempTPPtr->pt()>hough_pt_){
-	h_tracks_reg_id->Fill(charid,1);
-
+	      h_tracks_reg_id->Fill(charid,1); 
         h_tracks_reg_etaphi->Fill(eta,phi);
         h_tracks_reg_eta->Fill(eta);
         h_tracks_reg_phi->Fill(phi);

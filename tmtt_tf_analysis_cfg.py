@@ -58,9 +58,9 @@ process.demo = cms.EDAnalyzer('TMTrackFinder',
         PtHigh       = cms.double(20),
         RECO         = cms.bool(False),                      # True if you are analyzing a RECO sample
         EtaRegister  = cms.bool(False),                       # Enable the new register cut in the transition region
-        BrokenLayer = cms.bool(False),
-        BrokenLayerId = cms.int32(3),
-        NRadii = cms.int32(4)
+        BrokenLayer = cms.bool(True),
+        BrokenLayerId = cms.int32(4),
+        NRadii = cms.int32(5)
 
 )
 
